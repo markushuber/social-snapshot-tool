@@ -1,0 +1,5 @@
+php:
+php5-curl
+
+java:
+Selenium

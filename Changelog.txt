@@ -1,0 +1,364 @@
+changeset:   43:bd5abfd86a8e
+tag:         tip
+user:        Markus <markus@nysos.net>
+date:        Sat May 14 13:28:17 2011 +0200
+files:       php/Connection.php php/index.php
+description:
+Social Snapshot data is exported as JSON
+--
+
+
+changeset:   42:71fd30884ea9
+user:        Markus <markus@nysos.net>
+date:        Wed Mar 30 01:34:47 2011 +0200
+files:       php/Album.php php/compress.php
+description:
+Less album content, fixed compress
+
+
+changeset:   41:616d4a034bb9
+user:        Markus <markus@nysos.net>
+date:        Tue Mar 29 23:58:13 2011 +0200
+files:       php/Album.php php/Event.php php/Group.php php/Link.php php/Note.php php/Photo.php php/Post.php php/PriorityQueue.php php/Status.php php/User.php php/Video.php php/compress.php php/facebook.php php/index.php
+description:
+Code polishing, ommit lots of less important graph data
+
+
+changeset:   40:6b2f42c5d937
+user:        Markus <markus@nysos.net>
+date:        Mon Mar 28 12:39:07 2011 +0200
+files:       php/PriorityQueue.php php/User.php php/index.php
+description:
+"Tuning"
+
+
+changeset:   39:51b95c9d48d9
+user:        Markus <markus@nysos.net>
+date:        Mon Mar 14 13:38:27 2011 +0100
+files:       php/APIObject.php php/Message.php php/Page.php php/PriorityQueue.php php/User.php php/facebook.php php/index.php
+description:
+Testing different parameters for performance, changed welcome text
+
+
+changeset:   38:710844a0dda1
+user:        Markus <markus@nysos.net>
+date:        Mon Mar 07 19:33:53 2011 +0100
+files:       php/Event.php php/Group.php php/Page.php php/PriorityQueue.php php/User.php
+description:
+Tuning connection, do not fetch less important content
+
+
+changeset:   37:0cee344d57cf
+user:        Markus <markus@nysos.net>
+date:        Wed Mar 02 00:19:59 2011 +0100
+files:       php/Connection.php
+description:
+Paging working
+
+
+changeset:   36:195f30bbf86c
+parent:      32:f1ba41ada2cf
+user:        Markus <markus@nysos.net>
+date:        Tue Mar 01 17:34:34 2011 +0100
+files:       php/Connection.php php/User.php php/index.php
+description:
+Paging first try, still bugfixing
+
+
+changeset:   35:115fe58259ef
+user:        markus
+date:        Sat May 14 13:35:55 2011 +0200
+files:       java/readme.txt java/selenium-setenv-setldpath.patch java/server-patched.jar java/server.sh
+description:
+Pactched selenium server for cookie injection
+
+
+changeset:   34:5e3cc636d761
+user:        markus
+date:        Mon Apr 04 15:17:40 2011 +0200
+files:       java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar java/selenium-server-standalone.jar
+description:
+Minor fbclient fix, working patched selenium server (cookie auth)
+
+
+changeset:   33:8971f169a79f
+parent:      31:9550ac4e5b42
+user:        markus
+date:        Wed Mar 30 01:23:02 2011 +0200
+files:       java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Code Polish, cvs output
+
+
+changeset:   32:f1ba41ada2cf
+parent:      22:0ab783977219
+user:        Markus <markus@nysos.net>
+date:        Tue Jan 18 18:39:42 2011 +0100
+files:       php/APIObject.php php/PriorityQueue.php php/User.php php/index.php
+description:
+Performance improvements, depth currently set at 1
+
+
+changeset:   31:9550ac4e5b42
+user:        markus
+date:        Tue Jan 18 18:40:32 2011 +0100
+files:       java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Application timeout set to 30min
+
+
+changeset:   30:8e23a9f527d7
+user:        markus
+date:        Mon Jan 17 10:25:23 2011 +0100
+files:       .project java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Fixed timeout for App, minor code clean up
+
+
+changeset:   29:3106bffb08e0
+user:        markus
+date:        Thu Jan 06 12:33:39 2011 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Email, Email Image URL, Screen Names, and Phone numbers are now parsed and logged
+
+
+changeset:   28:a32f628b2d21
+user:        markus
+date:        Thu Jan 06 11:28:52 2011 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Parsing works
+
+
+changeset:   27:2f99aee81be5
+user:        markus
+date:        Wed Jan 05 16:27:00 2011 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+almost fixed the parsing
+
+
+changeset:   26:5d311441af7e
+user:        markus
+date:        Wed Jan 05 10:55:24 2011 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Links to EMail-images parsing fixed
+
+
+changeset:   25:ce582dcae4ab
+user:        markus
+date:        Tue Jan 04 14:58:23 2011 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Minor bug fixes, retrieve email image urls
+
+
+changeset:   24:3188d30df68b
+user:        markus
+date:        Tue Nov 23 15:02:27 2010 +0100
+files:       java/.classpath java/.project
+description:
+eclipse meta files
+
+
+changeset:   23:0efb7d9a6f4c
+parent:      17:2713bcd87c64
+user:        markus
+date:        Tue Nov 23 14:55:31 2010 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Fixed selenium app-removal code
+
+
+changeset:   22:0ab783977219
+user:        markus@puffy.nysos.net
+date:        Mon Nov 22 22:36:33 2010 +0100
+files:       .hgignore php/src-backup/facebook-php-sdk-9147097/examples/example.php php/src-backup/facebook-php-sdk-9147097/readme.md php/src-backup/facebook-php-sdk-9147097/src/facebook.php php/src-backup/facebook-php-sdk-9147097/src/fb_ca_chain_bundle.crt php/src-backup/facebook-php-sdk-9147097/tests/tests.php php/src-backup/facebook-php-sdk/facebook-php-sdk/src/facebook.php php/tarballs/index.html
+description:
+Clean up
+
+
+changeset:   21:bebdfbf2d598
+user:        markus@puffy.nysos.net
+date:        Mon Nov 22 22:16:41 2010 +0100
+files:       .hgignore php/Connection.php php/compress.php php/index.php
+description:
+Fixed compress with new folder structure (tmp, tarballs, etc.)
+
+
+changeset:   20:10eec6c9e56a
+user:        markus@puffy.nysos.net
+date:        Mon Nov 22 17:10:28 2010 +0100
+files:       php/compress.php php/index.php
+description:
+Fixed download.(Changed log path)
+
+
+changeset:   19:0aabf8d5c45a
+user:        markus@puffy.nysos.net
+date:        Mon Nov 22 11:20:02 2010 +0100
+files:       php/facebook.php php/index.php
+description:
+Fixed duplicate foldernames (use same folder after "continue" was
+clicked)
+
+
+changeset:   18:be3da0784f40
+parent:      15:2b026438bd27
+user:        markus@puffy.nysos.net
+date:        Wed Nov 17 13:58:48 2010 +0100
+files:       php/facebook.php php/index.php
+description:
+Is now logging to "./logs", changed timeouts
+
+
+changeset:   17:2713bcd87c64
+user:        markus
+date:        Mon Nov 22 22:20:21 2010 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+minor fix, smaller timeout
+
+
+changeset:   16:03edc3f15bf4
+user:        markus
+date:        Tue Nov 16 11:19:01 2010 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+App is added now ;-) No pw debug message
+
+
+changeset:   15:2b026438bd27
+user:        markus
+date:        Thu Nov 11 14:59:17 2010 +0100
+files:       php/facebook.php
+description:
+old facebook sdk file
+
+
+changeset:   14:926eec34c31f
+user:        markus
+date:        Thu Nov 11 13:48:02 2010 +0100
+files:       php/facebook.php
+description:
+fb api
+
+
+changeset:   13:f220fa8ff030
+user:        markus
+date:        Thu Nov 11 13:41:20 2010 +0100
+files:       php/facebook.php
+description:
+fb api change
+
+
+changeset:   12:b2151f09b2f9
+user:        markus
+date:        Thu Nov 11 13:32:26 2010 +0100
+files:       php/facebook-php-sdk-9147097/examples/example.php php/facebook-php-sdk-9147097/readme.md php/facebook-php-sdk-9147097/src/facebook.php php/facebook-php-sdk-9147097/src/fb_ca_chain_bundle.crt php/facebook-php-sdk-9147097/tests/tests.php php/facebook.php
+description:
+overwritten getSession function in custom facebook.php
+
+
+changeset:   11:9d762d071e51
+user:        markus
+date:        Thu Nov 11 13:25:20 2010 +0100
+files:       .hgignore
+description:
+ignore
+
+
+changeset:   10:e00d0f30985d
+user:        Markus <markus@nysos.net>
+date:        Thu Nov 11 13:12:47 2010 +0100
+files:       php/index.php
+description:
+mercurial not updating?
+
+
+changeset:   9:37f1067d4036
+user:        Markus <markus@nysos.net>
+date:        Thu Nov 11 12:01:36 2010 +0100
+files:       php/Connection.php php/index.php
+description:
+Changed appid and fixed shortag in Connection.php
+
+
+changeset:   8:b1765e170814
+parent:      6:f1dcd193ef73
+user:        markus
+date:        Thu Nov 11 11:00:17 2010 +0100
+files:       java/FBCrawl/.project java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+Minor bug fix
+
+
+changeset:   7:8f5b5398be58
+parent:      5:c259b3d9cc20
+user:        Markus <markus@nysos.net>
+date:        Wed Nov 10 12:41:49 2010 +0100
+files:       php/facebook-php-sdk/src/facebook.php php/index.php
+description:
+CURL options fix for Facebook SDK
+
+
+changeset:   6:f1dcd193ef73
+parent:      3:35c94a5af367
+user:        markus
+date:        Wed Nov 10 11:43:42 2010 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar java/server.sh
+description:
+Java class now logs emails into file
+
+
+changeset:   5:c259b3d9cc20
+user:        Markus <markus@nysos.net>
+date:        Tue Nov 09 17:16:36 2010 +0100
+files:       java/index.html php/Connection.php php/example.php php/facebook-php-sdk/examples/example.php php/facebook-php-sdk/readme.md php/facebook-php-sdk/src/facebook.php php/facebook-php-sdk/src/fb_ca_chain_bundle.crt php/facebook-php-sdk/tests/tests.php php/index.php php/pax_global_header php/test.phpinfo.php
+description:
+Updated to new SDK, fixed minor bugs
+
+
+changeset:   4:d0ed1f8d17a4
+parent:      1:21a89d993d38
+user:        markus@tor.securityresearch.local
+date:        Tue Nov 09 10:38:10 2010 +0100
+files:       php/index.php
+description:
+Adapted to new server
+
+
+changeset:   3:35c94a5af367
+user:        markus
+date:        Tue Nov 09 11:11:21 2010 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+description:
+fixed to new server
+
+
+changeset:   2:a1b405b0354d
+user:        markus
+date:        Fri Nov 05 20:17:54 2010 +0100
+files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar java/lib/client.jar java/lib/common.jar java/lib/selenium.jar java/lib/server.jar java/put_this_on_classpath/client.jar java/put_this_on_classpath/common.jar java/put_this_on_classpath/selenium.jar java/put_this_on_classpath/server.jar java/selenium-server-standalone-2.0a7.jar
+description:
+Added different selenium-server otherone broke
+
+
+changeset:   1:21a89d993d38
+user:        markus
+date:        Fri Nov 05 12:27:39 2010 +0100
+files:       java/FBCrawl/.classpath java/FBCrawl/.project java/FBCrawl/META-INF/MANIFEST.MF java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/put_this_on_classpath/client.jar java/put_this_on_classpath/common.jar java/put_this_on_classpath/selenium.jar java/put_this_on_classpath/server.jar java/selenium-server-standalone.jar
+description:
+Java client inital source
+
+
+changeset:   0:5a4a3924e6c0
+user:        markus
+date:        Thu Nov 04 15:05:43 2010 +0100
+files:       .hgignore .project php/.index.php.swp php/APIObject.php php/Album.php php/Comment.php php/Connection.php php/Event.php php/Group.php php/Link.php php/Message.php php/Note.php php/Page.php php/Photo.php php/Picture.php php/Post.php php/PriorityQueue.php php/Profile.php php/Status.php php/Taggable.php php/User.php php/Video.php php/compress.php php/facebook-php-sdk/facebook-php-sdk/src/facebook.php php/facebook.php php/index.php php/src-backup/code-1286789689.tar.bz2 php/src-backup/examplecrawl.tar.bz2 php/src-backup/fbcrawl-2010-08-18-nightly.tar.bz2 php/src-backup/fbcrawl-dist.tar.bz2 php/src-backup/fbcrawl-selenium.tar.bz2 php/src-backup/fbcrawl-source(2).tar.bz2 php/src-backup/fbcrawl-source.tar.bz2 php/src-backup/fbcrawl.tar.bz2 php/src-backup/fbcrawl1282130592.tar.bz2 php/src-backup/fbcrawl_doc.tar.bz2 php/test.php.phpinfo
+description:
+Initial source from ml, new directories
+
+
