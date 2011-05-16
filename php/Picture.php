@@ -1,20 +1,20 @@
 <?php
 /*  Copyright 2010-2011 SBA Research gGmbH
 
-     This file is part of FBCrawl.
+     This file is part of SocialSnapshot.
 
-    FBCrawl is free software: you can redistribute it and/or modify
+    SocialSnapshot is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    FBCrawl is distributed in the hope that it will be useful,
+    SocialSnapshot is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with FBCrawl.  If not, see <http://www.gnu.org/licenses/>.*/
+    along with SocialSnapshot.  If not, see <http://www.gnu.org/licenses/>.*/
 
 /**
 * Picture is a skeleton class, it only serves to hold links to data 

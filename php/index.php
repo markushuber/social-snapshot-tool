@@ -1,20 +1,20 @@
 <?php
 /*  Copyright 2010-2011 SBA Research gGmbH
 
-     This file is part of FBCrawl.
+     This file is part of SocialSnapshot.
 
-    FBCrawl is free software: you can redistribute it and/or modify
+    SocialSnapshot is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    FBCrawl is distributed in the hope that it will be useful,
+    SocialSnapshot is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with FBCrawl.  If not, see <http://www.gnu.org/licenses/>.*/
+    along with SocialSnapshot.  If not, see <http://www.gnu.org/licenses/>.*/
 
 // This file is partially based on example FB Graph code by Facebook, Inc.,
 // licensed under the Apache License, Version 2.0.
@@ -91,7 +91,7 @@ if ($me) {
  #$loginUrl = $facebook->getLoginUrl(array('req_perms' => 'read_friendlists,friends_activities,friends_groups,friends_interests,friends_likes'));
 }
 
-// Raise the PHP memory limit - FBCrawl stores quite a few connections (PHP objects), so we will need this.
+// Raise the PHP memory limit - SocialSnapshot stores quite a few connections (PHP objects), so we will need this.
 ini_set('memory_limit', '256M');
 
 // Raise the maximum execution time. Network access to FB is slow ;)
@@ -100,7 +100,7 @@ set_time_limit(900);
 <!doctype html>
 <html>
 <head>
-<title>FBCrawl (max execution time: <?php echo ini_get('max_execution_time'); ?>)</title>
+<title>SocialSnapshot (max execution time: <?php echo ini_get('max_execution_time'); ?>)</title>
 <style>
 body {
 font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
@@ -182,22 +182,22 @@ else
 
 <?php else: ?>
 <strong><em>You are not Connected.</em></strong>
-<h1>FBCrawl</h1>
-<p>Welcome to the FBCrawl site. Here, you can find all information necessary for running our nifty little tool.</p>
-<h2>What is FBCrawl</h2>
-<p>FBCrawl is, as the name suggests, a little crawler for Facebook. It utilises both client-side automatisation via Selenium and server-side crawling with the Graph API. The client part tries to find all mail addresses associated with your friends, whereas the server part simply crawls through as much data as possible, giving the user the possibility to download the findings later. The server assigns different priorities to different connections, resulting in rapid crawling of user-related data and slower crawling of data we deem not as important.
+<h1>SocialSnapshot</h1>
+<p>Welcome to the SocialSnapshot site. Here, you can find all information necessary for running our nifty little tool.</p>
+<h2>What is SocialSnapshot</h2>
+<p>SocialSnapshot is, as the name suggests, a little crawler for Facebook. It utilises both client-side automatisation via Selenium and server-side crawling with the Graph API. The client part tries to find all mail addresses associated with your friends, whereas the server part simply crawls through as much data as possible, giving the user the possibility to download the findings later. The server assigns different priorities to different connections, resulting in rapid crawling of user-related data and slower crawling of data we deem not as important.
 </p>
-<h2>How do I get FBCrawl?</h2>
-<p>We provide two versions of our client software, one that <a href='fbcrawl-selenium.tar.bz2'>includes Selenium</a>, the engine needed to automate client browser actions, and one that <a href='fbcrawl.tar.bz2'>only contains the payload</a>. Note that you will need to have a Selenium server running. If you download the second choice, you will have to get Selenium elsewhere (actually, you should only download the second option if you already have the Selenium server on your machine).</p>
+<h2>How do I get SocialSnapshot?</h2>
+<p>We provide two versions of our client software, one that <a href='socialsnapshot-selenium.tar.bz2'>includes Selenium</a>, the engine needed to automate client browser actions, and one that <a href='socialsnapshot.tar.bz2'>only contains the payload</a>. Note that you will need to have a Selenium server running. If you download the second choice, you will have to get Selenium elsewhere (actually, you should only download the second option if you already have the Selenium server on your machine).</p>
 <h2>How do I run it, then?</h2>
 <p>First, you will need to launch a Selenium server.<br />
 <code>java -jar selenium-server.jar</code><br />
-Then, you can launch our FBCrawl client. You have two options, either use a mail/password combination to log into Facebook, or sniff a cookie off the wire and use that.<br />
-<code>java -jar fbcrawl.jar mail@domain.tld passW0rD</code><br />
-<code>java -jar fbcrawl.jar cookietextgoeshere</code><br />
-The output of FBCrawl consists of three main parts: First, a few HTTP headers you'll most likely want to ignore; then, a URL under which you can later retrieve all the crawled Graph data; and lastly, while FBCrawl goes through  your account, it dumps all text that contains '@', enabling you to search for mail addresses and other contact information (Windows Live IDs, for instance)</p>
+Then, you can launch our SocialSnapshot client. You have two options, either use a mail/password combination to log into Facebook, or sniff a cookie off the wire and use that.<br />
+<code>java -jar socialsnapshot.jar mail@domain.tld passW0rD</code><br />
+<code>java -jar socialsnapshot.jar cookietextgoeshere</code><br />
+The output of SocialSnapshot consists of three main parts: First, a few HTTP headers you'll most likely want to ignore; then, a URL under which you can later retrieve all the crawled Graph data; and lastly, while SocialSnapshot goes through  your account, it dumps all text that contains '@', enabling you to search for mail addresses and other contact information (Windows Live IDs, for instance)</p>
 <h2>So what about the Graph data?</h2>
-<p>The FBCrawl client output will contain a line like this:<br />
+<p>The SocialSnapshot client output will contain a line like this:<br />
 <code>You can receive the downloaded graph data at compress.php?id=foobar</code><br />
 If you retrieve this URL, you will receive a tar.bz2 file. Unpacking it will yield a log file and a folder that contains the downloaded data.<br />
 The files in this folder will look something like this:<br />
@@ -216,9 +216,9 @@ me.request
 Now, this may look confusing at first, but if you know what Graph API requests look like, you'll recognize the pattern. The first part of all files that end in .request is the ID of an object in the API; the part after the tilde specifies a certain connection. For instance, <code>100001309710131~friends.request</code> means "all friends of the object with the ID 100001309710131".<br />
 But what about those Base64 encoded strings? When our Graph API Crawler stores pictures, it simply sets the file name to the base64 encoded version of their name. So these files will always contain images.</p>
 <h2>I want to know more!</h2>
-<p>Very well then. Simply send me a mail at fbcrawl AT acanthephyra dot net. Please include "fbcrawl" in your subject line, otherwise your mail will be classified as spam and fed to hungry hippos.</p>
+<p>Very well then. Simply send me a mail at socialsnapshot AT acanthephyra dot net. Please include "socialsnapshot" in your subject line, otherwise your mail will be classified as spam and fed to hungry hippos.</p>
 <h2>I can haz source?</h2>
-<p>You can haz. The source of the Graph crawler is <a href='fbcrawl-dist.tar.bz2'>here</a>; as for the client, grab <a href='fbcrawl-source.tar.bz2'>this here</a>.</p>
+<p>You can haz. The source of the Graph crawler is <a href='socialsnapshot-dist.tar.bz2'>here</a>; as for the client, grab <a href='socialsnapshot-source.tar.bz2'>this here</a>.</p>
 <?php endif ?>
 
 </body>

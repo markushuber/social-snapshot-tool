@@ -1,20 +1,20 @@
 <?php
 /*  Copyright 2010-2011 SBA Research gGmbH
 
-     This file is part of FBCrawl.
+     This file is part of SocialSnapshot.
 
-    FBCrawl is free software: you can redistribute it and/or modify
+    SocialSnapshot is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    FBCrawl is distributed in the hope that it will be useful,
+    SocialSnapshot is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with FBCrawl.  If not, see <http://www.gnu.org/licenses/>.*/
+    along with SocialSnapshot.  If not, see <http://www.gnu.org/licenses/>.*/
 
 // Your FB App Id. You will definitely want to set this.
 $_appId = '17237SOMETHING';
@@ -27,7 +27,7 @@ $_secret = 'b285dETCETC';
 $_cookie = true;
 
 // This is the priority level after which we "do not care" anymore.
-// FBCrawl will exit at its next convenience when reaching this level.
+// SocialSnapshot will exit at its next convenience when reaching this level.
 $_minLevel = 5;
 
 ?>

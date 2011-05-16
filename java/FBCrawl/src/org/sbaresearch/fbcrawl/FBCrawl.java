@@ -1,21 +1,21 @@
 /*  Copyright 2010-2011 SBA Research gGmbH
 
-     This file is part of FBCrawl.
+     This file is part of SocialSnapshot.
 
-    FBCrawl is free software: you can redistribute it and/or modify
+    SocialSnapshot is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    FBCrawl is distributed in the hope that it will be useful,
+    SocialSnapshot is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with FBCrawl.  If not, see <http://www.gnu.org/licenses/>.*/
+    along with SocialSnapshot.  If not, see <http://www.gnu.org/licenses/>.*/
 
-package org.sbaresearch.fbcrawl;
+package org.sbaresearch.socialsnapshot;
 
 import com.thoughtworks.selenium.*;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.io.*;
  * @author mleithner@sba-research.org
  * 
  */
-public class FBCrawl {
+public class SocialSnapshot {
 	/**
 	 * Indicates whether we're coming from a login page or just jumped right
 	 * into the session with a session cookie.
@@ -68,7 +68,7 @@ public class FBCrawl {
 	// very nice with FF4.
 	final static String browserString = "*firefox3";
 
-	// The path to your FB application, i.e. where you installed FBCrawl to.
+	// The path to your FB application, i.e. where you installed SocialSnapshot to.
 	// XXX: You definitely do want to change this. Unless you feel like pushing 
 	// your data over to us...in which case you give SBA Research consent to use it for
 	// anonymised research purposes.
@@ -88,18 +88,18 @@ public class FBCrawl {
 	 */
 	static ArrayList<String> cookieNames = new ArrayList<String>();
 	static {
-		FBCrawl.cookieNames.add("locale");
-		FBCrawl.cookieNames.add("datr");
-		FBCrawl.cookieNames.add("lu");
-		FBCrawl.cookieNames.add("sct");
-		FBCrawl.cookieNames.add("x-referer");
-		FBCrawl.cookieNames.add("lsd");
-		FBCrawl.cookieNames.add("c_user");
-		FBCrawl.cookieNames.add("cur_max_lag");
-		FBCrawl.cookieNames.add("sid");
-		FBCrawl.cookieNames.add("xs");
-		FBCrawl.cookieNames.add("e");
-		FBCrawl.cookieNames.add("presence");
+		SocialSnapshot.cookieNames.add("locale");
+		SocialSnapshot.cookieNames.add("datr");
+		SocialSnapshot.cookieNames.add("lu");
+		SocialSnapshot.cookieNames.add("sct");
+		SocialSnapshot.cookieNames.add("x-referer");
+		SocialSnapshot.cookieNames.add("lsd");
+		SocialSnapshot.cookieNames.add("c_user");
+		SocialSnapshot.cookieNames.add("cur_max_lag");
+		SocialSnapshot.cookieNames.add("sid");
+		SocialSnapshot.cookieNames.add("xs");
+		SocialSnapshot.cookieNames.add("e");
+		SocialSnapshot.cookieNames.add("presence");
 	};
 
 	/**
@@ -156,11 +156,11 @@ public class FBCrawl {
 //			System.out
 //					.println("WARNING: Due to a bug in the Selenium RC server, this cookie will be stored until you shut the server down. PLEASE TAKE NOTICE. Password auth will not work anymore in this Selenium RC instance.");
 		} else {
-			System.out.println("__________FBCrawl__________\n" +
+			System.out.println("__________SocialSnapshot__________\n" +
 					"Usage:\n" +
-					"java -jar fbcrawl.jar <cookie>\n" +
-					"java -jar fbcrawl.jar <mail> <password>\n" +
-					"\n\nFBCrawl logs into a Facebook account (or simply uses a cookie you sniffed off the wire), grabs all mail adresses of this account's friends and crawls data using the Graph API.\n" +
+					"java -jar socialsnapshot.jar <cookie>\n" +
+					"java -jar socialsnapshot.jar <mail> <password>\n" +
+					"\n\nSocialSnapshot logs into a Facebook account (or simply uses a cookie you sniffed off the wire), grabs all mail adresses of this account's friends and crawls data using the Graph API.\n" +
 					"Please note that you'll have to start a Selenium server before using this tool.\n" +
 					"You can start a Selenium server by using java -jar selenium-server.jar.");
 			System.exit(0);
@@ -168,7 +168,7 @@ public class FBCrawl {
 
 		// Connect to the selenium server and tell it what browser we want to
 		// use and with what base URL
-		Selenium selenium = new DefaultSelenium("localhost", 4444, FBCrawl.browserString,
+		Selenium selenium = new DefaultSelenium("localhost", 4444, SocialSnapshot.browserString,
 				"http://facebook.com");
 		// Start the browser
 		selenium.start("captureNetworkTraffic=true");
@@ -193,7 +193,7 @@ public class FBCrawl {
 				name = singleCookie.substring(0, equalsIndex).trim();
 				value = singleCookie.substring(equalsIndex + 1).trim();
 				System.out.println("Checking cookie " + name);
-				if(FBCrawl.cookieNames.contains(name))
+				if(SocialSnapshot.cookieNames.contains(name))
 				{
 					selenium.addSetCookie(name, value +  "; path=/; domain=.facebook.com");
 					System.out.println("Set cookie " + name);
@@ -207,15 +207,15 @@ public class FBCrawl {
 
 		// Are we doing password auth? If so, call our function.
 		if (mail != null && password != null)
-			FBCrawl.login(selenium, mail, password);
+			SocialSnapshot.login(selenium, mail, password);
 
 		// For test purposes, simply grab the user's account name
 		// String accname = selenium.getText("id=navAccountName");
 
 		// Did we just use cookie auth? If so, we need to get rid of that
 		// annoying popup that tells us to login, even though we are.
-		if (!FBCrawl.fromLogin) {
-			if (!FBCrawl.waitForElement(selenium,
+		if (!SocialSnapshot.fromLogin) {
+			if (!SocialSnapshot.waitForElement(selenium,
 					"xpath=//input[@type='button' and @name='cancel']", 10)) {
 				System.err
 						.println("Can't find the popup window cancel button...");
@@ -230,7 +230,7 @@ public class FBCrawl {
 		// Open our Graph Crawler in a popup window called fbc. We can then let
 		// it process in parallel to the rest we're doing with Selenium.
 		String nonce = "snapshot" + new Date().getTime();
-		selenium.openWindow(FBCrawl.graphHost + "/?sendid=" + nonce, "fbc");
+		selenium.openWindow(SocialSnapshot.graphHost + "/?sendid=" + nonce, "fbc");
 
 		// Wait for the popup to load, then select it
 		selenium.waitForPopUp("fbc", "60000");
@@ -247,7 +247,7 @@ public class FBCrawl {
 
 			// If we reach this point, we're obviously on the Facebook prompt
 			// site. Let's wait for the "Grant" button to appear.
-			if (FBCrawl.waitForElement(selenium, "name=grant_clicked", 15)) {
+			if (SocialSnapshot.waitForElement(selenium, "name=grant_clicked", 15)) {
 				// Click on the "Grant" button, then wait for the page to load.
 				selenium.click("name=grant_clicked");
 				selenium.waitForPageToLoad("60000");
@@ -260,7 +260,7 @@ public class FBCrawl {
 			appExeTimeout = new Date(new Date().getTime() + apptimeout * Timer.ONE_MINUTE);
 
 			// Let Selenium crawl through the links to friend profiles our Graph API just produced
-			friendUrls = FBCrawl.fetchFriendUrls(selenium, "friend");
+			friendUrls = SocialSnapshot.fetchFriendUrls(selenium, "friend");
 			
 			// Begin the Graph crawl
 			selenium.click("class=continue");
@@ -302,7 +302,7 @@ public class FBCrawl {
 					selenium.open(link);
 
 					// Wait until the data is actually there.
-					if (!FBCrawl.waitForElement(selenium,
+					if (!SocialSnapshot.waitForElement(selenium,
 							"xpath=//td[@class='data']", 5)) {
 						System.err
 						.println("Can't find data fields, maybe this is a page instead of a user. Not to worry, we'll just continue.");
@@ -377,7 +377,7 @@ public class FBCrawl {
 		currenttime = new Date();
 		System.out.println("\nEnd Time: " + currenttime.toString());
 		System.out.println("\nYou can find the contact-details in results/" + nonce + ".csv");
-		System.out.println("You can receive the downloaded graph data at " + FBCrawl.graphHost + "/compress.php?id=" + nonce);
+		System.out.println("You can receive the downloaded graph data at " + SocialSnapshot.graphHost + "/compress.php?id=" + nonce);
 		System.out.println("Attention: Data from FB application may be still fetching data!");
 		//Idle until application timeout has been reached
 		
@@ -405,7 +405,7 @@ public class FBCrawl {
 		selenium.waitForPageToLoad("60000");
 		
 		// Wait for 10 seconds, see if we can find the "delete" link
-		if (FBCrawl
+		if (SocialSnapshot
 				.waitForElement(
 						selenium,
 						"class=fbSettingsExpandedDelete",
@@ -415,7 +415,7 @@ public class FBCrawl {
 			selenium
 			.click("class=fbSettingsExpandedDelete");
 
-			if (!FBCrawl.waitForElement(selenium, "name=remove", 15)) {
+			if (!SocialSnapshot.waitForElement(selenium, "name=remove", 15)) {
 				System.err
 				.println("Seems like the box to remove our app isn't opening...");
 			}
@@ -446,7 +446,7 @@ public class FBCrawl {
 	 */
 	@SuppressWarnings("unused")
 	private static boolean waitForElement(Selenium selenium, String selector) {
-		return FBCrawl.waitForElement(selenium, selector, 30);
+		return SocialSnapshot.waitForElement(selenium, selector, 30);
 	}
 
 	/**
@@ -533,7 +533,7 @@ public class FBCrawl {
 		/* Press the submit button and wait until the new page has loaded */
 		selenium.click("xpath=//label[@class='uiButton uiButtonConfirm']/input");
 		selenium.waitForPageToLoad("60000");
-		FBCrawl.fromLogin = true;
+		SocialSnapshot.fromLogin = true;
 	}
 	
 	private static ArrayList<String> fetchFriendUrls(Selenium selenium, String classname)

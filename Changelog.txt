@@ -76,7 +76,7 @@ Pactched selenium server for cookie injection
 changeset:   34:5e3cc636d761
 user:        markus
 date:        Mon Apr 04 15:17:40 2011 +0200
-files:       java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar java/selenium-server-standalone.jar
+files:       java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar java/selenium-server-standalone.jar
 description:
 Minor fbclient fix, working patched selenium server (cookie auth)
 
@@ -85,7 +85,7 @@ changeset:   33:8971f169a79f
 parent:      31:9550ac4e5b42
 user:        markus
 date:        Wed Mar 30 01:23:02 2011 +0200
-files:       java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Code Polish, cvs output
 
@@ -102,7 +102,7 @@ Performance improvements, depth currently set at 1
 changeset:   31:9550ac4e5b42
 user:        markus
 date:        Tue Jan 18 18:40:32 2011 +0100
-files:       java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Application timeout set to 30min
 
@@ -110,7 +110,7 @@ Application timeout set to 30min
 changeset:   30:8e23a9f527d7
 user:        markus
 date:        Mon Jan 17 10:25:23 2011 +0100
-files:       .project java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       .project java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Fixed timeout for App, minor code clean up
 
@@ -118,7 +118,7 @@ Fixed timeout for App, minor code clean up
 changeset:   29:3106bffb08e0
 user:        markus
 date:        Thu Jan 06 12:33:39 2011 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Email, Email Image URL, Screen Names, and Phone numbers are now parsed and logged
 
@@ -126,7 +126,7 @@ Email, Email Image URL, Screen Names, and Phone numbers are now parsed and logge
 changeset:   28:a32f628b2d21
 user:        markus
 date:        Thu Jan 06 11:28:52 2011 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Parsing works
 
@@ -134,7 +134,7 @@ Parsing works
 changeset:   27:2f99aee81be5
 user:        markus
 date:        Wed Jan 05 16:27:00 2011 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 almost fixed the parsing
 
@@ -142,7 +142,7 @@ almost fixed the parsing
 changeset:   26:5d311441af7e
 user:        markus
 date:        Wed Jan 05 10:55:24 2011 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Links to EMail-images parsing fixed
 
@@ -150,7 +150,7 @@ Links to EMail-images parsing fixed
 changeset:   25:ce582dcae4ab
 user:        markus
 date:        Tue Jan 04 14:58:23 2011 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Minor bug fixes, retrieve email image urls
 
@@ -167,7 +167,7 @@ changeset:   23:0efb7d9a6f4c
 parent:      17:2713bcd87c64
 user:        markus
 date:        Tue Nov 23 14:55:31 2010 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Fixed selenium app-removal code
 
@@ -217,7 +217,7 @@ Is now logging to "./logs", changed timeouts
 changeset:   17:2713bcd87c64
 user:        markus
 date:        Mon Nov 22 22:20:21 2010 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 minor fix, smaller timeout
 
@@ -225,7 +225,7 @@ minor fix, smaller timeout
 changeset:   16:03edc3f15bf4
 user:        markus
 date:        Tue Nov 16 11:19:01 2010 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 App is added now ;-) No pw debug message
 
@@ -290,7 +290,7 @@ changeset:   8:b1765e170814
 parent:      6:f1dcd193ef73
 user:        markus
 date:        Thu Nov 11 11:00:17 2010 +0100
-files:       java/FBCrawl/.project java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/.project java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 Minor bug fix
 
@@ -308,7 +308,7 @@ changeset:   6:f1dcd193ef73
 parent:      3:35c94a5af367
 user:        markus
 date:        Wed Nov 10 11:43:42 2010 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar java/server.sh
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar java/server.sh
 description:
 Java class now logs emails into file
 
@@ -333,7 +333,7 @@ Adapted to new server
 changeset:   3:35c94a5af367
 user:        markus
 date:        Tue Nov 09 11:11:21 2010 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar
 description:
 fixed to new server
 
@@ -341,7 +341,7 @@ fixed to new server
 changeset:   2:a1b405b0354d
 user:        markus
 date:        Fri Nov 05 20:17:54 2010 +0100
-files:       java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/fbcrawler.jar java/lib/client.jar java/lib/common.jar java/lib/selenium.jar java/lib/server.jar java/put_this_on_classpath/client.jar java/put_this_on_classpath/common.jar java/put_this_on_classpath/selenium.jar java/put_this_on_classpath/server.jar java/selenium-server-standalone-2.0a7.jar
+files:       java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/socialsnapshoter.jar java/lib/client.jar java/lib/common.jar java/lib/selenium.jar java/lib/server.jar java/put_this_on_classpath/client.jar java/put_this_on_classpath/common.jar java/put_this_on_classpath/selenium.jar java/put_this_on_classpath/server.jar java/selenium-server-standalone-2.0a7.jar
 description:
 Added different selenium-server otherone broke
 
@@ -349,7 +349,7 @@ Added different selenium-server otherone broke
 changeset:   1:21a89d993d38
 user:        markus
 date:        Fri Nov 05 12:27:39 2010 +0100
-files:       java/FBCrawl/.classpath java/FBCrawl/.project java/FBCrawl/META-INF/MANIFEST.MF java/FBCrawl/bin/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.class java/FBCrawl/src/org/sbaresearch/fbcrawl/FBCrawl.java java/put_this_on_classpath/client.jar java/put_this_on_classpath/common.jar java/put_this_on_classpath/selenium.jar java/put_this_on_classpath/server.jar java/selenium-server-standalone.jar
+files:       java/SocialSnapshot/.classpath java/SocialSnapshot/.project java/SocialSnapshot/META-INF/MANIFEST.MF java/SocialSnapshot/bin/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.class java/SocialSnapshot/src/org/sbaresearch/socialsnapshot/SocialSnapshot.java java/put_this_on_classpath/client.jar java/put_this_on_classpath/common.jar java/put_this_on_classpath/selenium.jar java/put_this_on_classpath/server.jar java/selenium-server-standalone.jar
 description:
 Java client inital source
 
@@ -357,7 +357,7 @@ Java client inital source
 changeset:   0:5a4a3924e6c0
 user:        markus
 date:        Thu Nov 04 15:05:43 2010 +0100
-files:       .hgignore .project php/.index.php.swp php/APIObject.php php/Album.php php/Comment.php php/Connection.php php/Event.php php/Group.php php/Link.php php/Message.php php/Note.php php/Page.php php/Photo.php php/Picture.php php/Post.php php/PriorityQueue.php php/Profile.php php/Status.php php/Taggable.php php/User.php php/Video.php php/compress.php php/facebook-php-sdk/facebook-php-sdk/src/facebook.php php/facebook.php php/index.php php/src-backup/code-1286789689.tar.bz2 php/src-backup/examplecrawl.tar.bz2 php/src-backup/fbcrawl-2010-08-18-nightly.tar.bz2 php/src-backup/fbcrawl-dist.tar.bz2 php/src-backup/fbcrawl-selenium.tar.bz2 php/src-backup/fbcrawl-source(2).tar.bz2 php/src-backup/fbcrawl-source.tar.bz2 php/src-backup/fbcrawl.tar.bz2 php/src-backup/fbcrawl1282130592.tar.bz2 php/src-backup/fbcrawl_doc.tar.bz2 php/test.php.phpinfo
+files:       .hgignore .project php/.index.php.swp php/APIObject.php php/Album.php php/Comment.php php/Connection.php php/Event.php php/Group.php php/Link.php php/Message.php php/Note.php php/Page.php php/Photo.php php/Picture.php php/Post.php php/PriorityQueue.php php/Profile.php php/Status.php php/Taggable.php php/User.php php/Video.php php/compress.php php/facebook-php-sdk/facebook-php-sdk/src/facebook.php php/facebook.php php/index.php php/src-backup/code-1286789689.tar.bz2 php/src-backup/examplecrawl.tar.bz2 php/src-backup/socialsnapshot-2010-08-18-nightly.tar.bz2 php/src-backup/socialsnapshot-dist.tar.bz2 php/src-backup/socialsnapshot-selenium.tar.bz2 php/src-backup/socialsnapshot-source(2).tar.bz2 php/src-backup/socialsnapshot-source.tar.bz2 php/src-backup/socialsnapshot.tar.bz2 php/src-backup/socialsnapshot1282130592.tar.bz2 php/src-backup/socialsnapshot_doc.tar.bz2 php/test.php.phpinfo
 description:
 Initial source from ml, new directories
 
