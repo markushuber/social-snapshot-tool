@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="java/SocialSnapshot/src"/>
+	<classpathentry kind="lib" path="java/lib/client.jar"/>
+	<classpathentry kind="lib" path="java/lib/common.jar"/>
+	<classpathentry kind="lib" path="java/lib/selenium.jar"/>
+	<classpathentry kind="lib" path="java/lib/server.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="java/SocialSnapshot/bin"/>
+</classpath>
