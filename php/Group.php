@@ -31,11 +31,12 @@ class Group extends Profile
 		$this->depth=$depth;
 		if(isset($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Group", false), 5);
+		/*Do not fetch Group owner + feed for now
 		if(isset($json['owner']['id']))
 			$this->connections->unshift(new Connection($json['owner']['id'], $depth, "User", false));
 		if($depth<2)
 			$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true));
 		$this->connections->unshift(new Connection($json['id'] . '/members', $depth, "Profile", true));
-		$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 5);
+		$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 5);*/
 	}
 }

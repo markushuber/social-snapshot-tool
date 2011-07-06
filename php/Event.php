@@ -32,6 +32,7 @@ class Event extends Profile
 		$this->connections = new PriorityQueue();
 		if(isset($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Event", false), 5);
+		/*No need for this information yet
 		if(isset($json['owner']['id']))
 			$this->connections->unshift(new Connection($json['owner']['id'], $depth, "User", false));
 		$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true));
@@ -40,6 +41,6 @@ class Event extends Profile
 		$this->connections->unshift(new Connection($json['id'] . '/invited', $depth, "User", true));
 		$this->connections->unshift(new Connection($json['id'] . '/attending', $depth, "User", true));
 		$this->connections->unshift(new Connection($json['id'] . '/declined', $depth, "User", true));
-		$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false),5);
+		$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false),5);*/
 	}
 }

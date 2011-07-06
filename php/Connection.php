@@ -18,7 +18,8 @@
 
 /**
 * A connection from one object to one or many others.
-*/
+ */
+require 'settings.inc.php';
 class Connection
 {
 	// The URL of a connection, the current depth (i.e. how many levels of users deep we are), the type of this connection (basically a class name, or at least an abstract class if we can't yet determine which class it really is) and a boolean that states whether the connection will result in one or many objects of this class
@@ -71,7 +72,7 @@ class Connection
 	*/
 	public static function createSafeName($facebook, $url)
 	{
-		return $facebook->getUnique() . "/" .strtr($url, "/", "~") . ".request";
+		return "tmp/" . $facebook->getUnique() . "/" .strtr($url, "/&?", "~-_") . ".request";
 	}
 
 	/**
@@ -83,8 +84,8 @@ class Connection
         public function fetch($facebook)
        	{
 		// If the folder for our output files doesn't exist yet, create it
-		if(!is_dir($facebook->getUnique()))
-			mkdir($facebook->getUnique());
+		if(!is_dir("tmp/" . $facebook->getUnique()))
+			mkdir("tmp/" . $facebook->getUnique());
 
 		// Create a safe file name. Simply replaces all slashes, actually.
 		//TODO: Write this platform-independent-safe
@@ -95,8 +96,8 @@ class Connection
 		if($this->type=='Picture')
 		{
 			fprintf($facebook->getLogFd(), "Writing picture with filesize " . strlen($this->json) . "\n");	
-			if(!file_exists($facebook->getUnique() . "/" . base64_encode($this->url)))
-				file_put_contents($facebook->getUnique() . "/" .base64_encode($this->url), $this->json);
+			if(!file_exists("tmp/" . $facebook->getUnique() . "/" . base64_encode($this->url)))
+				file_put_contents("tmp/" . $facebook->getUnique() . "/" .base64_encode($this->url), $this->json);
 			return new Picture("",0);
 		}
 
@@ -140,11 +141,23 @@ class Connection
 		$fp = fopen($fname, "w");
 
 		// Write the json data - in text form - to the file
-		fwrite($fp, print_r($this->json, TRUE));
+		//fwrite($fp, print_r($this->json, TRUE));
+		fwrite($fp, json_encode($this->json));
 
 		// Close the output file again.
 		fclose($fp);
 
+		if(isset($this->json['paging']) && isset($this->json['paging']['next']))
+		{
+			$queue = new PriorityQueue();
+			$url = substr($this->json['paging']['next'], strpos($this->json['paging']['next'], "com/")+4);
+			$facebook->log("[DEBUG] Adding paging URL " . $url);	
+			$queue->unshift(new Connection($url, $this->depth, $this->type, true), 100);
+			Facebook::getQueue()->merge($queue);
+		}
+		else 
+                        $facebook->log("[DEBUG] No paging or next");    
+		
 		// If the data is not "right there" at the topmost level but nested in the data part, replace our internal variable with the actual payload.
 		if(isset($this->json['data']))
 		{
@@ -259,12 +272,11 @@ class Connection
 	{
 		if($size<0)
 			$size=PriorityQueue::$POPCNT;
+			//$size=$_shiftelements;
 		$retval = array();
 		for($i=0; $i<$size; $i++)
 			$retval[$i] = array();
 		return $retval;
 	}
-
 }
-
 ?>

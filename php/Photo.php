@@ -32,13 +32,14 @@ class Photo extends APIObject
 		$this->depth=$depth;	
 		if(isset($json['id']))
 		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Photo", false), 7);
+		/*No need for this so far?
 		if(isset($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
 		if(isset($json['picture']))
 			$this->connections->unshift(new Connection($json['picture'], $depth, "Picture", false), 8-$depth);
 		 if(isset($json['source']))
 		        $this->connections->unshift(new Connection($json['source'], $depth, "Picture", false), 8-$depth);
-		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));
+		 $this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));*/
 	}
 
 }

@@ -33,9 +33,11 @@ class Album extends APIObject
 		// Unshift our connections into the queue
 		if(isset($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Album", false), 7);	
+		/*
 		if(isset($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false),5);
 		$this->connections->unshift(new Connection($json['id'] . '/photos', $depth, "Photo", true), 7-$depth);
 		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));
+		 */
 	}
 }

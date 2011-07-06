@@ -19,6 +19,7 @@
 // This file is based on FB Graph API example code released by 
 // Facebook, Inc under the Apache License, Version 2.0.
 // Original code can be found at https://github.com/facebook/php-sdk/blob/master/src/facebook.php. 
+require 'settings.inc.php';
 
 if (!function_exists('curl_init')) {
   throw new Exception('Facebook needs the CURL PHP extension.');
@@ -96,46 +97,24 @@ class FacebookApiException extends Exception
  */
 class Facebook
 {
-   /**
-    * The PriorityQueue used in this instance of SocialSnapshot
-    */
    private static $queue;
-
-   /**
-    * Simple getter for the queue. Constructs a new one if necessary.
-    */
    public static function getQueue()
    {
 	if(!isset(Facebook::$queue))
 		Facebook::$queue = new PriorityQueue();
 	return Facebook::$queue;
    }
-
-   /**
-    * A file handler for the log file
-    */
    private $logfd;
-
-   /**
-    * Simple getter for the log file handle. Opens the logfile if necessary.
-    */
    public function getLogFd()
    {
 	if(!isset($this->logfd))
-		$this->logfd = fopen("./facebook" . $this->getUnique() . ".log", "w");
+		$this->logfd = fopen("logs/facebook" . $this->getUnique() . ".log", "w");
 	return $this->logfd;
    }
-
-   /**
-    * Writes a string to the log file
-    */
    public function log($string)
    {
-  	fprintf($this->getLogFd(), $string . "\n"); 
+  fprintf($this->getLogFd(), $string . "\n"); 
    }
-
-
-
    /**
    * List of error codes that trigger clearing of the session.
    */
@@ -235,12 +214,15 @@ class Facebook
     }
   }
 
-  /**
-   * Get the unique ID for this instance of SocialSnapshot.
-   */
   public function getUnique()
   {
 	return $this->unique;
+  }
+
+  public function setUnique($uniquetoken)
+  {
+	  $this->unique = $uniquetoken;
+	  return $this;
   }
 
   /**
@@ -501,17 +483,11 @@ class Facebook
     }
   }
   
-  /**
-   * Make a number of API calls.
-   *
-   * In reality, this function just imitates the interface of api(...)
-   * and forwards the call to _graph_multi.
-   */
-  public function api_multi() 
-  {
+public function api_multi() 
+{
 	$args = func_get_args();
 	call_user_func_array(array($this, '_graph_multi'), $args);
-  }
+}
 
   /**
    * Invoke the old restserver.php endpoint.
@@ -568,26 +544,20 @@ class Facebook
     
     return $result;
   }
-  
-  /**
-   * Shifts a few connections from the global PriorityQueue and prepares them 
-   * for being fetched from the Graph API, then calls makeRequest_multi to
-   * perform the actual API call.
-   * Also weeds out connections that have already been fetched.
-   */
-  private function _graph_multi($method='GET', $params=array(array()), $callback="echo")
-  {
+
+private function _graph_multi($method='GET', $params=array(array()), $callback="echo")
+{
+	//echo "---------------------------------------------GRAPH_MULTI START---------------------------------------------<br />";
 	for($i=0;$i<count($params);$i++)
 	{
 		$params[$i]['method'] = $method;
 	}
 	$urls = array();
 	$i=0;
-
-	// Fetch a number of connections from the PriorityQueue
+	//echo "_graph_multi() " . Facebook::getQueue()->count() . " elements in the Facebook queue.<br />";
 	try{
 		$connections = Facebook::getQueue()->shift(PriorityQueue::$POPCNT);
-		$this->log("Grabbed elements; objects remaining in queue: " . Facebook::getQueue()->count() . " (highest level: " . Facebook::getQueue()->highestLevel() . ")");
+		$this->log(date("G:i:s ") . "Grabbed elements; objects remaining in queue: " . Facebook::getQueue()->count() . " (highest level: " . Facebook::getQueue()->highestLevel() . ")");
 	} catch(Exception $e)
 	{	
 		//echo "_graph_mult() Exception when shifting: " . $e->getMessage() . "<br />";
@@ -596,8 +566,6 @@ class Facebook
 		return;
 	}
 	//echo "_graph_multi() " . Facebook::getQueue()->count() . " in queue, " . count($connections)  . " in array that will be passed to the fetcher<br />";
-	
-	// Transform non-absolute URLs in the connections we just grabbed into absolute ones
 	foreach($connections as $connection)
 	{
 		if(FALSE===strpos($connection->getUrl(), "http"))
@@ -607,8 +575,6 @@ class Facebook
 		//echo "Setting URL to " . $urls[$i] . "<br />";
 		$i++;		
 	}
-
-	// Check whether a connection has already been fetched from the Graph API and grab a replacement from the PriorityQueue in that case
 	foreach($urls as $i=>$url)
 	{
 		$fname = Connection::createSafeName($this, $connections[$i]->getUrl()); 
@@ -640,37 +606,10 @@ class Facebook
 	$params = array_values($params);
 	$urls = array_values($urls);
 	$connections = array_values($connections);
-
-	// Ensure the access token is set and JSON encode all parameters
-	foreach(array_keys($params) as $i)
-        {
-                if(!isset($params[$i]['access_token']))
-                {
-                        $session = $this->getSession();
-                        if($session)
-                        {
-                                $params[$i]['access_token'] = $session['access_token'];
-                        }
-                        else
-                        {
-                                //echo "_oauthRequest_multi() No session set. This is a problem, we'll most likely fail.";
-                                //TODO: HALP! I dunno what to do here...
-                        }
-                }
-                foreach(array_keys($params[$i]) as $j)
-                {
-                        if(!is_string($params[$i][$j]))
-                        {
-                                $params[$i][$j] = json_encode($params[$i][$j]);
-                        }
-                }
-
-        }
-        /*echo "All ze parameters of this lot:<br />";
-        print_r($params);*/
-        $this->makeRequest_multi($connections, $params, $callback, $urls);	
-  }
- 
+	
+	$this->_oauthRequest_multi($connections, $params, $callback, $urls);
+	//echo "---------------------------------------------GRAPH_MULTI END---------------------------------------------<br />";
+}
   /**
    * Make a OAuth Request
    *
@@ -702,6 +641,40 @@ class Facebook
     return $this->makeRequest($url, $params);
   }
 
+private function _oauthRequest_multi($connections, $params, $callback, $urls)	
+{
+	//echo "---------------------------------------------OAUTHREQUEST_MULTI START---------------------------------------------<br />";
+	foreach(array_keys($params) as $i)
+	{
+		if(!isset($params[$i]['access_token']))
+		{
+			$session = $this->getSession();
+			if($session)
+			{
+				$params[$i]['access_token'] = $session['access_token'];
+			}
+			else
+			{
+				//echo "_oauthRequest_multi() No session set. This is a problem, we'll most likely fail.";
+				//TODO: HALP! I dunno what to do here...
+			}
+		}
+		foreach(array_keys($params[$i]) as $j)
+		{
+			if(!is_string($params[$i][$j]))
+			{
+				$params[$i][$j] = json_encode($params[$i][$j]);
+			}
+		}
+		
+	}
+	/*echo "All ze parameters of this lot:<br />";
+	print_r($params);*/
+	$this->makeRequest_multi($connections, $params, $callback, $urls);
+	//echo "---------------------------------------------OAUTHREQUEST_MULTI END---------------------------------------------<br />";
+}
+	
+
   /**
    * Makes an HTTP request. This method can be overriden by subclasses if
    * developers want to do fancier things or use something other than curl to
@@ -719,16 +692,13 @@ class Facebook
     return $result;
   }
 
-  protected function makeRequest_multi($connections, $params, $callback, $urls, $mc=null)
-  {
-	// Make sure we have a working cURL multi requester
+protected function makeRequest_multi($connections, $params, $callback, $urls, $mc=null)
+{
+	//echo "---------------------------------------------MAKEREQUEST_MULTI START---------------------------------------------<br />";
 	if(!$mc)
 	{
 		$mc = curl_multi_init();
 	}
-
-	// Construct requests for all the connections about to be fetched and
-	// add them to the cURL queue
 	foreach($urls as $i=>$url)
 	{
 		//echo "makeRequest_multi() Constructing request to " . $url . "<br />";
@@ -753,8 +723,6 @@ class Facebook
 		curl_multi_add_handle($mc, $ch);
 		$channels[] = $ch;
 	}
-
-	// Execute the API call with cURL and wait until it has finished
 	do
 	{
 		$execret = curl_multi_exec($mc, $running);
@@ -770,15 +738,10 @@ class Facebook
         		} while ($execret == CURLM_CALL_MULTI_PERFORM);	
 		}
 	}
-
-	// Handle errors received from cURL
 	if($execret != CURLM_OK)
 	{
 		trigger_error("makeRequest_multi() Curl multi read error $execret\n", E_USER_WARNING);
 	}
-
-	// Retrieve the received data from cURL and pass it on to the callback.
-	// Also, handle errors if any occurred on single handlers
 	$index=0;
 	foreach($connections as $i=>$connection)
 	{
@@ -804,63 +767,46 @@ class Facebook
 		}	
 		$index++;
 	}
-
-	// Close the cURL_multi instance
 	curl_multi_close($mc);
+	//echo "---------------------------------------------MAKEREQUEST_MULTI END---------------------------------------------<br />";
 			
-  }
+}
 
-  /**
-   * Returns a single cURL connection handler from the Round Robin.
-   * Rotates the handlers every Facebook::$HANDLER_REFRESH times.
-   * The rotation is done because we ran into problems after a while
-   * without it (handlers would simply throw errors and stop working).
-   */
-  private function handler_roundrobin()
-  {
-	// Either if we haven't constructed all necessary handlers or when it's time to rotate,
-	// we create a new cURL handler (and optionally close it before that). 
-	if(count($this->handlers) < PriorityQueue::$POPCNT || $this->handlerindex > Facebook::$HANDLER_REFRESH)
-    	{
-    		if(count($this->handlers) >= PriorityQueue::$POPCNT)
-			curl_close($this->handlers[$this->handlerindex%PriorityQueue::$POPCNT]);
-    		$this->handlers[$this->handlerindex%PriorityQueue::$POPCNT] = curl_init();
-    	}
-
-	// Rotate the handlers - actually, this party only resets the array index for the handlers
-    	if($this->handlerindex == Facebook::$HANDLER_REFRESH + PriorityQueue::$POPCNT)
-    	{
-		$this->handlerindex = 0;
-		$this->log("Rotating connection handlers...");
-    	}
-
-	// Print a log message and find us the next handler
-    	$this->log("Handing out handler " . $this->handlerindex%PriorityQueue::$POPCNT);
-    	$retval = $this->handlers[$this->handlerindex%PriorityQueue::$POPCNT];
-    	$this->handlerindex++;
-    	return $retval;
-  }
-
-  /*
-   * Constructs a new cURL request with the given URL and parameters.
-   */
-  protected function constructRequest($url, $params, $ch=null)	{
-	// Make sure we get a proper connection handler
+ private function handler_roundrobin()
+ { 
+    if(count($this->handlers) < PriorityQueue::$POPCNT || $this->handlerindex > Facebook::$HANDLER_REFRESH)
+    {
+    	if(count($this->handlers) >= PriorityQueue::$POPCNT)
+		curl_close($this->handlers[$this->handlerindex%PriorityQueue::$POPCNT]);
+    	$this->handlers[$this->handlerindex%PriorityQueue::$POPCNT] = curl_init();
+    }
+    if($this->handlerindex == Facebook::$HANDLER_REFRESH + PriorityQueue::$POPCNT)
+    {
+	$this->handlerindex = 0;
+	$this->log("Rotating connection handlers...");
+    }
+    $this->log("Handing out handler " . $this->handlerindex%PriorityQueue::$POPCNT);
+    $retval = $this->handlers[$this->handlerindex%PriorityQueue::$POPCNT];
+    $this->handlerindex++;
+    return $retval;
+ }
+ protected function constructRequest($url, $params, $ch=null)	{
+    //echo "---------------------------------------------CONSTRUCTREQUEST START---------------------------------------------<br />";
 	if (!$ch) {
-      		$ch = $this->handler_roundrobin();
-    	}
+      $ch = $this->handler_roundrobin();
+    }
 
-    	$opts = self::$CURL_OPTS;
-	
-	// We only need the POST fields constructed if we're requesting Graph data
-	// (requests to the CDN can actually be completely unsigned etc)
-    	if(FALSE===strpos($url, 'fbcdn'))
-		$opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
-    	$opts[CURLOPT_URL] = $url;
-    	echo "Handler index: " . $this->handlerindex. "<br />";
-    	curl_setopt_array($ch, $opts);
-    	return $ch;
-  }
+    $opts = self::$CURL_OPTS;
+    if(FALSE===strpos($url, 'fbcdn'))
+	    $opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
+    $opts[CURLOPT_URL] = $url;
+    //if(FALSE!=strpos($url, "fbcdn"))
+//	   $this->log("Constructing request to image " . $url);
+    //echo "Handler index: " . $this->handlerindex. "<br />";
+    curl_setopt_array($ch, $opts);
+	//echo "---------------------------------------------CONSTRUCTREQUEST END---------------------------------------------<br />";
+    return $ch;
+    }
 
 
   /**

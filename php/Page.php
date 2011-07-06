@@ -39,6 +39,7 @@ class Page extends Profile
 		$this->depth=$depth;
 		if(isset($json['id']))
 		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Page", false), 8);
+		/* No need for this information right now
 		$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 8);
 		if($depth<2)
 		{
@@ -53,6 +54,6 @@ class Page extends Profile
 			$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true));	
 			$this->connections->unshift(new Connection($json['id'] . '/posts', $depth, "Post", true));
 			$this->connections->unshift(new Connection($json['id'] . '/events', $depth, "Event", true));
-		}
+		}*/
 	}
 }

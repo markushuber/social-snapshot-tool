@@ -16,23 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with SocialSnapshot.  If not, see <http://www.gnu.org/licenses/>.*/
 
-/**
-* A video posted on Facebook.
-* Connections:
-* - The profile that published the video
-* - Comments made on it
-*/
-class Video extends APIObject 
-{
-	function __construct($json, $depth)
-	{
-		$this->connections = new PriorityQueue();
-		$this->depth=$depth;
-		if(isset($json['id']))
-		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Video", false));
-		/*Not for now
-		if(isset($json['from']['id']))
-			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
-		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));*/
-	}
-}
+// Your FB App Id. You will definitely want to set this.
+$_appId = '000000000000000';
+
+// This is your FB API secret. Change this and don't hand it out
+// Do NOT check this into any source VCS...
+$_secret = '00000000000000000000000000000000';
+
+// Are we using cookie-based sessions?
+$_cookie = true;
+?>

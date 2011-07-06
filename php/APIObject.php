@@ -20,9 +20,12 @@
 * An abstract class that serves as an ancestor of all API objects. Defines the structure of the __construct() call and provides a function that merges the connections of the current object into the big static queue.
 * @author mleithner@sba-research.org
 */
+require 'settings.inc.php';
+
 abstract class APIObject
 {
 	// The largest depth we will descend to. If we go further, getConnections() simply returns NULL.
+	//const MAX_DEPTH = $_depth;
 	const MAX_DEPTH = 2;
 
 	// Variables for the content of the object (in json_decode()d form) and the current depth
@@ -44,6 +47,7 @@ abstract class APIObject
 	{
 		// If we've gone too deep, simply return NULL.
 		if($this->depth>APIObject::MAX_DEPTH)
+		//if($this->depth>$_maxdepth)
 			return NULL; 
 		// This is just a workaround for classes that still use the old way of storing connections (that is, as an array).
 		if(is_array($this->connections))

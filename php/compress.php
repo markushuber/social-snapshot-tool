@@ -24,23 +24,22 @@
 if(isset($_GET['id']))
 {
 	// Check if the token is valid (must not contain anything but alphanumeric plus _) and if the folder and logs for this run exist
-	if(0!=preg_match("/[^\w]/", $_GET['id']) || !file_exists("folder" . $_GET['id']) || !file_exists("log" . $_GET['id']))
+	if(0!=preg_match("/[^\w]/", $_GET['id']) || !file_exists("tmp/folder" . $_GET['id']) || !file_exists("tmp/log" . $_GET['id']))
 	{
 		// Die otherwise
-		die();
+		die("Could not find socialsnapshot id :-(.");
 	}
 
 	// Tar and compress the logfile and folder
-	$id = escapeshellcmd($_GET['id']);
-	exec("tar -hcjf tar" . $id . ".tar.bz2 log" . $id . " folder" . $id . " > /dev/null");
+	exec("cd tmp && tar -hcjf ../tarballs/social" . $_GET['id'] . ".tar.bz2 log" .  $_GET['id'] . " folder" . $_GET['id'] . " > /dev/null");
 	
 	// Open the output file for reading
-	$fp = fopen("tar" . $id . ".tar.bz2", "r");
+	$fp = fopen("tarballs/social" . $_GET['id'] . ".tar.bz2", "r");
 	
 	// Send the appriopriate MIME type, content length and filename
 	header("Content-Type: application/x-bzip2");
-	header("Content-Length: " . filesize("tar" . $id . ".tar.bz2"));
-	header('Content-Disposition: attachment; filename="tar'.$_GET["id"].'.tar.bz2"');
+	header("Content-Length: " . filesize("tarballs/social" . $_GET['id'] . ".tar.bz2"));
+	header('Content-Disposition: attachment; filename="social'.$_GET["id"].'.tar.bz2"');
 	
 	// Pass all data in the file through to the client
 	fpassthru($fp);

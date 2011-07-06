@@ -30,8 +30,9 @@ class Status extends APIObject
 		$this->depth=$depth;
 		if(isset($json['id']))
 		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Status", false));
+		/* No need so far
 		if(isset($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
-		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));
+		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));*/
 	}
 }

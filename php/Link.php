@@ -29,9 +29,10 @@ class Link extends APIObject
 		$this->connections = new PriorityQueue();
 		$this->depth=$depth;
 		if(isset($json['id']))
-                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Link", false));
+			$this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Link", false));
+		/* Not for now
 		if(isset($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
-		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));
+		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));*/
 	}
 }

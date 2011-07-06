@@ -19,6 +19,7 @@
 /**
 * As the name suggests, a queue that returns elements based on their priority.
 */
+require 'settings.inc.php';
 class PriorityQueue
 {
 	// The highest and lowest priority used in this queue
@@ -34,7 +35,7 @@ class PriorityQueue
 	private $count;
 	
 	// The number of elements that should usually be returned by a shift() call
-	public static $POPCNT = 3;
+	public static $POPCNT = 150;
 
 	/**
 	* Returns the highest priority present in this queue.

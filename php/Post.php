@@ -33,6 +33,7 @@ class Post extends APIObject
 		$this->depth=$depth;
 		if(isset($json['id']))
 		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Post", false));
+		/*Not for now
 		if(isset($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
 		if(isset($json['to']['id']))
@@ -41,6 +42,6 @@ class Post extends APIObject
                         $this->connections->unshift(new Connection($json['picture'], $depth, "Picture", false));
                  if(isset($json['source']))
                         $this->connections->unshift(new Connection($json['source'], $depth, "Picture", false));
-		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));
+		 $this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));*/
 	}
 }
