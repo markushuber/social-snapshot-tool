@@ -19,8 +19,8 @@
 // This file is partially based on example FB Graph code by Facebook, Inc.,
 // licensed under the Apache License, Version 2.0.
 // Original code at https://github.com/facebook/php-sdk/blob/master/examples/example.php
-require 'settings.inc.php';
 require_once 'PriorityQueue.php';
+require 'settings.inc.php';
 require 'facebook.php';
 require 'APIObject.php';
 require 'Taggable.php';
@@ -67,11 +67,25 @@ function readNode($facebook,$parent)
 	{
 		$facebook->api_multi('GET',Connection::createEmptyArray(), array("Connection", "recursor"));
 		$facebook->log(date("G:i:s D M j T Y") . " Returned into readNode(), " . Facebook::getQueue()->count() . " elements left, let's get back in there! Highest Level: " . Facebook::getQueue()->highestLevel());
-		if(Facebook::getQueue()->highestLevel()<=3){
+		if(Facebook::getQueue()->highestLevel()<3){
 			$facebook->log("Finished. highestLevel: " . Facebook::getQueue()->highestLevel());
+			$remaining = print_r(Facebook::getQueue(),true);
+			$facebook->log($remaining);
 			break;
 		}
-	}	
+	}
+        // Compress the gathered socialsnapshot		
+	// Tar and compress the logfile and folder
+	// Check if the token is valid (must not contain anything but alphanumeric plus _) and if the folder and logs for this run really exist
+	if(0!=preg_match("/[^\w]/", $_GET['sendid']) || !file_exists("tmp/folder" . $_GET['sendid']) || !file_exists("tmp/log" . $_GET['sendid']))
+	{
+		// Die otherwise
+		die("Compression Failed: Could not find according socialsnapshot and log.");
+	}
+	else {
+		exec("cd tmp && tar -hcjf ../tarballs/social" . $_GET['sendid'] . ".tar.bz2 log" .  $_GET['sendid'] . " folder" . $_GET['sendid'] . " > /dev/null");
+		exec("touch tmp/" . $_GET['sendid'] . ".finished > /dev/null");
+	}
 }
 
 // We may or may not have this data based on a $_GET or $_COOKIE based session.
@@ -105,8 +119,8 @@ if ($me) {
 
 //Lots of memory
 ini_set('memory_limit', '512M');
-//Set timeout to 30min
-set_time_limit(1800);
+//Set timeout to 60min
+set_time_limit(3600);
 ?>
 <!doctype html>
 <html>
@@ -143,7 +157,7 @@ text-decoration: underline;
 
 if(!isset($_GET['continue']))
 {
-  //echo "<a id='fetchlink' href='compress.php?id=" . $_GET['sendid'] . "'>Download your data here</a><br />";
+  echo "<br />";	
   $friends = $facebook->api('/me/friends');
   foreach($friends['data'] as $friend)
   {

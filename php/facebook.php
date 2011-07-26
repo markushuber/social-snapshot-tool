@@ -756,7 +756,7 @@ protected function makeRequest_multi($connections, $params, $callback, $urls, $m
 		{
 			@fprintf($this->getLogFd(), microtime() . " mem: " . memory_get_usage() . " Calling recursor, content of connection " . $connection->getUrl()  . " fetched (depth " . $connection->getDepth() . ")\n");
 			call_user_func($callback, $connection, curl_multi_getcontent($channels[$index]), $this);
-			echo "Back from callback.<br />";
+			//echo "Back from callback.<br />";
 		}
 		else
 			print "makeRequest_multi() Curl error on handle $i: $curlerror\n";
@@ -785,7 +785,7 @@ protected function makeRequest_multi($connections, $params, $callback, $urls, $m
 	$this->handlerindex = 0;
 	$this->log("Rotating connection handlers...");
     }
-    $this->log("Handing out handler " . $this->handlerindex%PriorityQueue::$POPCNT);
+    //$this->log("Handing out handler " . $this->handlerindex%PriorityQueue::$POPCNT);
     $retval = $this->handlers[$this->handlerindex%PriorityQueue::$POPCNT];
     $this->handlerindex++;
     return $retval;

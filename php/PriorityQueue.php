@@ -35,7 +35,7 @@ class PriorityQueue
 	private $count;
 	
 	// The number of elements that should usually be returned by a shift() call
-	public static $POPCNT = 150;
+	public static $POPCNT = 190;
 
 	/**
 	* Returns the highest priority present in this queue.
