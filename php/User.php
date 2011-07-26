@@ -73,27 +73,27 @@ class User extends Profile
                                         $this->connections->unshift(new Connection(number_format($education['year']['id'],0,'',''), $depth, "Page", false));
 			}
 		}
-                $this->connections->unshift(new Connection($json['id'] . '/home', $depth, "Post", true));
-		$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true));
+                $this->connections->unshift(new Connection($json['id'] . '/home', $depth, "Post", true), 6);
+		$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true), 6);
 		//$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 9);
-                $this->connections->unshift(new Connection($json['id'] . '/tagged', $depth, "Taggable", true), 8);
-                $this->connections->unshift(new Connection($json['id'] . '/links', $depth, "Link", true));
-	        $this->connections->unshift(new Connection($json['id'] . '/photos', $depth, "Photo", true), 10);
+                $this->connections->unshift(new Connection($json['id'] . '/tagged', $depth, "Taggable", true), 9);
+                $this->connections->unshift(new Connection($json['id'] . '/links', $depth, "Link", true), 5);/*
+			$this->connections->unshift(new Connection($json['id'] . '/photos', $depth, "Photo", true), 10);*/
                 $this->connections->unshift(new Connection($json['id'] . '/groups', $depth, "Group", true), 9);
-                $this->connections->unshift(new Connection($json['id'] . '/albums', $depth, "Album", true),8);
-                $this->connections->unshift(new Connection($json['id'] . '/statuses', $depth, "Status", true));
-                $this->connections->unshift(new Connection($json['id'] . '/videos', $depth, "Video", true));
-                $this->connections->unshift(new Connection($json['id'] . '/notes', $depth, "Note", true));
-                $this->connections->unshift(new Connection($json['id'] . '/posts', $depth, "Post", true));
+                $this->connections->unshift(new Connection($json['id'] . '/albums', $depth - 1, "Album", true), 8);
+                $this->connections->unshift(new Connection($json['id'] . '/statuses', $depth, "Status", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/videos', $depth, "Video", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/notes', $depth, "Note", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/posts', $depth, "Post", true), 8);
                 $this->connections->unshift(new Connection($json['id'] . '/events', $depth, "Event", true), 9);
                 $this->connections->unshift(new Connection($json['id'] . '/friends', $depth, "User", true), 10);
                 $this->connections->unshift(new Connection($json['id'] . '/activities', $depth, "Page", true), 8);
                 $this->connections->unshift(new Connection($json['id'] . '/interests', $depth, "Page", true), 8);
-                $this->connections->unshift(new Connection($json['id'] . '/music', $depth, "Page", true), 8);
-                $this->connections->unshift(new Connection($json['id'] . '/books', $depth, "Page", true), 8);
-                $this->connections->unshift(new Connection($json['id'] . '/movies', $depth, "Page", true), 8);
-                $this->connections->unshift(new Connection($json['id'] . '/television', $depth, "Page", true), 8);
-                $this->connections->unshift(new Connection($json['id'] . '/likes', $depth, "Page", true), 6);
+                $this->connections->unshift(new Connection($json['id'] . '/music', $depth, "Page", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/books', $depth, "Page", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/movies', $depth, "Page", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/television', $depth, "Page", true), 5);
+                $this->connections->unshift(new Connection($json['id'] . '/likes', $depth, "Page", true), 5);
                 if($depth<2) $this->connections->unshift(new Connection($json['id'] . '/inbox', $depth, "Message", true), 10);
                 if($depth<2) $this->connections->unshift(new Connection($json['id'] . '/outbox', $depth, "Message", true), 10);
                 //$this->connections->unshift(new Connection($json['id'] . '/updates', $depth, "Message", true));

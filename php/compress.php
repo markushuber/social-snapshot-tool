@@ -24,14 +24,14 @@
 if(isset($_GET['id']))
 {
 	// Check if the token is valid (must not contain anything but alphanumeric plus _) and if the folder and logs for this run exist
-	if(0!=preg_match("/[^\w]/", $_GET['id']) || !file_exists("tmp/folder" . $_GET['id']) || !file_exists("tmp/log" . $_GET['id']))
-	{
+	if(0!=preg_match("/[^\w]/", $_GET['id']) || !file_exists("tmp/folder" . $_GET['id']) || !file_exists("tmp/log" . $_GET['id'])){
 		// Die otherwise
-		die("Could not find socialsnapshot id :-(.");
+		die("socialsnapshot still collecting data ...");
 	}
-
-	// Tar and compress the logfile and folder
-	exec("cd tmp && tar -hcjf ../tarballs/social" . $_GET['id'] . ".tar.bz2 log" .  $_GET['id'] . " folder" . $_GET['id'] . " > /dev/null");
+	if(!file_exists("tmp/" . $_GET['id'] . ".finished")){
+		// Die and show replacement banner
+		die("socialsnapshot still collecting data ...");
+	}
 	
 	// Open the output file for reading
 	$fp = fopen("tarballs/social" . $_GET['id'] . ".tar.bz2", "r");

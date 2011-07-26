@@ -1,6 +1,6 @@
 php/tmp
 php/tarballs
-php/log
+php/logs
 php/settings.inc.php
 java/socialsnapshot.config
 java/results
