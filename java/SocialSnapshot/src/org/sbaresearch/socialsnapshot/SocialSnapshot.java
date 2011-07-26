@@ -20,9 +20,9 @@ package org.sbaresearch.socialsnapshot;
 import com.thoughtworks.selenium.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
+//import java.util.Calendar;
+//import java.util.GregorianCalendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -75,7 +75,11 @@ public class SocialSnapshot {
 	// your data over to us...in which case you give SBA Research consent to use it for
 	// anonymised research purposes.
 	static String graphHost = "";
-
+	
+	// Host and Port of the selenium server instance the client connects to
+	static String serverHost = "localhost";
+	static int serverPort = 4444;
+	
 	/*
 	 * Timeout for application removal
 	 */
@@ -134,15 +138,25 @@ public class SocialSnapshot {
 		Properties config = new Properties();
 		 
 		try {
-	           //load a properties file
+	        //Load the SocialSnapshot config file
 			config.load(new FileInputStream("socialsnapshot.config"));
 
-	           //Parse the config options
+	        //Parse the config options
 	        graphHost = config.getProperty("graphHost");
 	        appid = config.getProperty("appid");
+	        //Optional settings to override default selenium server settings.
+	        if (config.containsKey("serverHost"))
+	        {
+	        	serverHost = config.getProperty("serverHost");
+	        }
+	        if (config.containsKey("serverPort"))
+	        {
+	        	serverPort =  Integer.parseInt(config.getProperty("serverPort"));
+	        }
+	    	
 
 		} catch (IOException ex) {
-			System.out.println("socialsnapshot configuration file not found (\'socialsnapshot.config\').");
+			System.out.println("SocialSnapshot configuration file not found or malformed (\'socialsnapshot.config\').");
 			//ex.printStackTrace();
 		    System.exit(0);
 	    }
@@ -186,13 +200,13 @@ public class SocialSnapshot {
 
 		// Connect to the selenium server and tell it what browser we want to
 		// use and with what base URL
-		Selenium selenium = new DefaultSelenium("localhost", 4444, SocialSnapshot.browserString,
+		Selenium selenium = new DefaultSelenium(serverHost, serverPort, SocialSnapshot.browserString,
 				"http://facebook.com");
 		// Start the browser
 		selenium.start("captureNetworkTraffic=true");
 		
-		Date currenttime = new Date();
-	    System.out.println("Start Time: " + currenttime.toString() + "\n");
+		//Create the timestamp nonce
+		String nonce = "snapshot" + new Date().getTime();
 	       
 		// Open Facebook and wait until the page has loaded; also, enable
 		// network traffic capturing (Selenium is slightly buggy and might only
@@ -219,7 +233,7 @@ public class SocialSnapshot {
 			}
 		}
 		selenium.open("http://facebook.com/?ref=home");
-		System.out.println("First instance loaded, should now have cookies.");
+		logAndPrint("First instance loaded, should now have cookies.", nonce);
 		// Reloading the front page - the first load was used to inject cookies
 		selenium.open("http://facebook.com/?ref=logo");
 
@@ -247,7 +261,6 @@ public class SocialSnapshot {
 
 		// Open our Graph Crawler in a popup window called fbc. We can then let
 		// it process in parallel to the rest we're doing with Selenium.
-		String nonce = "snapshot" + new Date().getTime();
 		selenium.openWindow(SocialSnapshot.graphHost + "/?sendid=" + nonce, "fbc");
 
 		// Wait for the popup to load, then select it
@@ -292,6 +305,9 @@ public class SocialSnapshot {
 			selenium.selectWindow(null);
 		}
 		
+		Date currenttime = new Date();
+	    logAndPrint("Start Time: " + currenttime.toString(), nonce);
+		
 		// If we managed to fetch links to friend profiles
 		if(null != friendUrls)
 
@@ -323,7 +339,7 @@ public class SocialSnapshot {
 					if (!SocialSnapshot.waitForElement(selenium,
 							"xpath=//td[@class='data']", 5)) {
 						System.err
-						.println("Can't find data fields, maybe this is a page instead of a user. Not to worry, we'll just continue.");
+						.println("Can't find data fields, good privacy settings.");
 					}
 
 					
@@ -384,6 +400,12 @@ public class SocialSnapshot {
 						logfile.write(userid + ";" + name + ";" + phones + ";" + instant + ";" + emails + ";" + mailimgurls + "\n");
 						logfile.flush();
 					}
+					//Wait 0sec, optional non-aggressive crawling
+					try {
+						Thread.sleep(0);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 				//Close the output stream
 				logfile.close();
@@ -393,31 +415,33 @@ public class SocialSnapshot {
 			System.err.println("Error: " + e.getMessage());
 		}	
 		currenttime = new Date();
-		System.out.println("\nEnd Time: " + currenttime.toString());
-		System.out.println("\nYou can find the contact-details in results/" + nonce + ".csv");
-		System.out.println("You can receive the downloaded graph data at " + SocialSnapshot.graphHost + "/compress.php?id=" + nonce);
+		logAndPrint("\nEnd Time: " + currenttime.toString(), nonce);
+		logAndPrint("\nCrawled " + friendUrls.size() + " Friend profiles.", nonce);
+		logAndPrint("\nYou can find the contact-details in results/" + nonce + ".csv", nonce);
+		logAndPrint("You can receive the downloaded graph data at " + SocialSnapshot.graphHost + "compress.php?id=" + nonce, nonce);
 		System.out.println("Attention: Facebook application may be still fetching data!");
+		
 		//Idle until application timeout has been reached
 		
-		while(new Date().getTime() < appExeTimeout.getTime()){
-		Calendar calendar = GregorianCalendar.getInstance();
-		calendar.setTime(new Date (appExeTimeout.getTime() - new Date().getTime()));
-		Integer minutesleft = calendar.get(Calendar.MINUTE);
-		//System.out.println(minutesleft.toString() + " minutes left.");
-		try {
-			Thread.currentThread();
-			//Sleep for one minute
-			Thread.sleep(60000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (minutesleft%10 == 0){
-			System.out.println(minutesleft.toString() + " minutes left until finished.");
-		}
-		
-		}
+//		while(new Date().getTime() < appExeTimeout.getTime()){
+//		Calendar calendar = GregorianCalendar.getInstance();
+//		calendar.setTime(new Date (appExeTimeout.getTime() - new Date().getTime()));
+//		Integer minutesleft = calendar.get(Calendar.MINUTE);
+//		//System.out.println(minutesleft.toString() + " minutes left.");
+//		try {
+//			Thread.currentThread();
+//			//Sleep for one minute
+//			Thread.sleep(60000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		if (minutesleft%10 == 0){
+//			System.out.println(minutesleft.toString() + " minutes left until finished.");
+//		}
+//		
+//		}
 		
 		// Now let's try to remove all traces of our activity. Okay, at least the app from the user's profile.
 		selenium.open("https://www.facebook.com/settings/?tab=applications&app_id=" + appid + "#application-li-" + appid);
@@ -563,6 +587,17 @@ public class SocialSnapshot {
 			urls.add(selenium.getAttribute("//a[@class=\"" + classname + "\"][" + i + "]@href"));
 		}
 		return urls;
+	}
+	
+	private static void logAndPrint(String message, String nonce){
+		System.out.println(message);
+		try {
+		    BufferedWriter out = new BufferedWriter(new FileWriter("results/" + nonce + ".log", true));
+		    out.write(message + "\n");
+		    out.close();
+		} catch (IOException e) {
+		}
+		
 	}
 
 }
