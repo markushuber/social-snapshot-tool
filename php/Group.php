@@ -29,7 +29,7 @@ class Group extends Profile
 	function __construct($json, $depth)
 	{	$this->connections = new PriorityQueue();
 		$this->depth=$depth;
-		if(isset($json['id']))
+		if(isset($json['id']) && is_numeric($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Group", false), 5);
 		/*Do not fetch Group owner + feed for now
 		if(isset($json['owner']['id']))

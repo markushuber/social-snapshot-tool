@@ -28,7 +28,7 @@ class Status extends APIObject
 	{
 		$this->connections = new PriorityQueue();
 		$this->depth=$depth;
-		if(isset($json['id']))
+		if(isset($json['id']) && is_numeric($json['id']))
 		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Status", false), 3);
 		/* No need so far
 		if(isset($json['from']['id']))

@@ -30,7 +30,7 @@ class Event extends Profile
 	{
 		$this->depth=$depth;
 		$this->connections = new PriorityQueue();
-		if(isset($json['id']))
+		if(isset($json['id']) && is_numeric($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Event", false), 5);
 		/*No need for this information yet
 		if(isset($json['owner']['id']))

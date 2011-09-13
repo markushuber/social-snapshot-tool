@@ -72,7 +72,9 @@ class Connection
 	*/
 	public static function createSafeName($facebook, $url)
 	{
-		return "tmp/" . $facebook->getUnique() . "/" .strtr($url, "/&?", "~-_") . ".request";
+		$safename =  "tmp/" . $facebook->getUnique() . "/" .strtr($url, "/&?", "~-_") . ".request";
+		$facebook->log("[FILE] Safename " . $safename . " generated");
+		return $safename;
 	}
 
 	/**
@@ -106,6 +108,7 @@ class Connection
 			// Check if the file already exists; if so, throw an exception
 			if(file_exists($fname))
 				throw new Exception("File " . $fname . " already exists.");
+			
 
 			// If json is empty, we haven't fetched any content yet, which means that we're using the old API.
 			// So let's just use the old api() call. This one also does an implicit json_decode(), so we don't have to perform that anymore.
@@ -116,6 +119,7 @@ class Connection
 			// - the content is not yet decoded
 			else
 			{
+			 $facebook->log("[RESPONSE] Response's json is larger than 0");
 			$this->json = json_decode($this->json, true);
 			}
 
@@ -124,20 +128,22 @@ class Connection
 			{
 				//echo "fetch() FB Error:<br />";
 				//print_r($this->json);
-				throw new Exception("fb error");
+				throw new Exception("fb error: " . json_encode($this->json['error']));
 			}
 		}
 		catch(Exception $e)
 		{
 			//echo "fetch() Exception occurred (" . $e->getMessage()  . "), continuing anyway, handling as empty Picture";
 			//ob_flush();
-			//flush();
+			//flush()
+			$facebook->log("[ERROR] fetch() Exception occurred (" . $e->getMessage()  . "), continuing anyway, handling as empty Picture");
 
 			// This "empty picture" is nearly an empty object. It has no connections and should therefore be completely neutral to the rest of the process.
 			return new Picture("",0);
 		}
 		
 		// Open the output file for writing
+		$facebook->log("[FILE] Creating file " . $fname);
 		$fp = fopen($fname, "w");
 
 		// Write the json data - in text form - to the file
@@ -182,6 +188,7 @@ class Connection
 					array_push($retval, new $this->type($item, $this->depth));
 				if($this->type == 'User')
 					$facebook->log('Created a user.');
+					//$facebook->log(print_r($item));
                         }
 			$fullnull = true;	
 			//Performing getConnections() now, adding everything into the big static queue

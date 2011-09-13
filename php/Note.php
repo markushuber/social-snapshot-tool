@@ -28,7 +28,7 @@ class Note extends APIObject
 	{
 		$this->connections = new PriorityQueue();		
 		$this->depth=$depth;
-		if(isset($json['id']))
+		if(isset($json['id']) && is_numeric($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Note", false), 7);
 		/*Not for now
 		if(isset($json['from']['id']))

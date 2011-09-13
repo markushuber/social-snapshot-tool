@@ -27,9 +27,9 @@ class Comment extends APIObject
 	{
 		$this->depth=$depth;
 		$this->connections = new PriorityQueue();
-		if(isset($json['id']))
+		if(isset($json['id']) && is_numeric($json['id']))
                         $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Comment", false));
-		if(isset($json['from']['id']))
+		if(isset($json['from']['id']) && is_numeric($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
 	}
 }

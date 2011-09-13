@@ -120,7 +120,7 @@ if ($me) {
 //Lots of memory
 ini_set('memory_limit', '512M');
 //Set timeout to 60min
-set_time_limit(3600);
+set_time_limit(7200);
 ?>
 <!doctype html>
 <html>
@@ -163,6 +163,7 @@ if(!isset($_GET['continue']))
   {
     echo "<a class='friend' href='http://www.facebook.com/profile.php?id=" . $friend['id'] . "'>" . $friend['name'] . "</a><br />";	
   }
+
   // It's probably a safe assumption to use the & here (instead of checking if we need ?), the Graph API needs the access token in the URL anyway, so there are parameters.
   echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=" . $_GET['sendid'] . "'>Continue</a></p>";
   //Flush the output
@@ -192,18 +193,53 @@ else
 	// Create the output directory if it doesn't exist
 	if(!is_dir($facebook->getUnique()))
 		mkdir("tmp/" . $facebook->getUnique());
-
+	
 	// We have already fetched our own user, so we should print that into a file and then start crawling.
 	$mefp = fopen("tmp/" . $facebook->getUnique() . '/me.request', "w");
 	//fputs($mefp, print_r($me, TRUE));
 	fputs($mefp, json_encode($me));
 	fclose($mefp);
+	
+	//Get friends cluster information
+	$friends = $facebook->api('/me/friends');
+	$friendslen = count($friends['data']);
+
+	for($index = 0; $index < ($friendslen - 1); $index++)
+	{
+		try{
+			$uids1 = array(); 
+			$uids2 = array(); 
+			for($repeat = 0; $repeat < ($friendslen - $index - 1); $repeat++){
+				$uids1[$repeat] = $friends['data'][$index]['id'];
+				$uids2[$repeat] = $friends['data'][$index + $repeat + 1]['id'];
+			}
+			$uids1str = implode(",",$uids1);	  
+			$uids2str = implode(",",$uids2);	  
+			#echo "uids1: " . $uids1str . "<br>";
+			#echo "uids2: " . $uids2str . "<br>";
+			$param = array('method' => 'friends.areFriends', 'uids1' => $uids1str, 'uids2' => $uids2str);
+			$cluster = fopen("tmp/" . $facebook->getUnique() . '/' . $friends['data'][$index]['id'] . '~cluster.request', "w");
+			$queryresult = $facebook->api($param);
+			while (empty($queryresult)) {
+				$facebook->log("Cluster query for: " . $friends['data'][$index]['id'] . " returned NULL, redo query.");
+				$queryresult = $facebook->api($param);
+				//sleep(1);
+			}
+			fputs($cluster, json_encode($queryresult));
+			//$facebook->log("Grabbing friends cluster for: " . $friends['data'][$index]['id']);
+			fclose($cluster);
+		}
+		catch(Exception $o){
+			$facebook->log("Legacy Api Calling Error:" . $o);
+		}
+	}
 	echo '<pre>';
 	// Creates all the connections from our current user
 	$startobject = new User($me, 0);
 
 	// Start crawling
 	readNode($facebook,$startobject);
+
 	echo '</pre>';
 }
 
