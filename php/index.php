@@ -69,6 +69,7 @@ function readNode($facebook,$parent)
 		$facebook->log(date("G:i:s D M j T Y") . " Returned into readNode(), " . Facebook::getQueue()->count() . " elements left, let's get back in there! Highest Level: " . Facebook::getQueue()->highestLevel());
 		if(Facebook::getQueue()->highestLevel()<3){
 			$facebook->log("Finished. highestLevel: " . Facebook::getQueue()->highestLevel());
+		$facebook->log("Finished " . date("G:i:s D M j T Y"));
 			$remaining = print_r(Facebook::getQueue(),true);
 			$facebook->log($remaining);
 			break;
@@ -83,7 +84,7 @@ function readNode($facebook,$parent)
 		die("Compression Failed: Could not find according socialsnapshot and log.");
 	}
 	else {
-		exec("cd tmp && tar -hcjf ../tarballs/social" . $_GET['sendid'] . ".tar.bz2 log" .  $_GET['sendid'] . " folder" . $_GET['sendid'] . " > /dev/null");
+		exec("cd tmp && tar -hcjf ../tarballs/" . $_GET['sendid'] . ".tar.bz2 log" .  $_GET['sendid'] . " folder" . $_GET['sendid'] . " > /dev/null");
 		exec("touch tmp/" . $_GET['sendid'] . ".finished > /dev/null");
 	}
 }
@@ -119,8 +120,8 @@ if ($me) {
 
 //Lots of memory
 ini_set('memory_limit', '512M');
-//Set timeout to 60min
-set_time_limit(7200);
+//Set timeout to 8h 
+set_time_limit(28800);
 ?>
 <!doctype html>
 <html>
@@ -196,6 +197,7 @@ else
 	
 	// We have already fetched our own user, so we should print that into a file and then start crawling.
 	$mefp = fopen("tmp/" . $facebook->getUnique() . '/me.request', "w");
+	$facebook->log("Started " . date("G:i:s D M j T Y"));
 	//fputs($mefp, print_r($me, TRUE));
 	fputs($mefp, json_encode($me));
 	fclose($mefp);
@@ -203,36 +205,30 @@ else
 	//Get friends cluster information
 	$friends = $facebook->api('/me/friends');
 	$friendslen = count($friends['data']);
-
+	$params = array();
+	$filenames = array();
 	for($index = 0; $index < ($friendslen - 1); $index++)
 	{
-		try{
-			$uids1 = array(); 
-			$uids2 = array(); 
-			for($repeat = 0; $repeat < ($friendslen - $index - 1); $repeat++){
-				$uids1[$repeat] = $friends['data'][$index]['id'];
-				$uids2[$repeat] = $friends['data'][$index + $repeat + 1]['id'];
-			}
-			$uids1str = implode(",",$uids1);	  
-			$uids2str = implode(",",$uids2);	  
-			#echo "uids1: " . $uids1str . "<br>";
-			#echo "uids2: " . $uids2str . "<br>";
-			$param = array('method' => 'friends.areFriends', 'uids1' => $uids1str, 'uids2' => $uids2str);
-			$cluster = fopen("tmp/" . $facebook->getUnique() . '/' . $friends['data'][$index]['id'] . '~cluster.request', "w");
-			$queryresult = $facebook->api($param);
-			while (empty($queryresult)) {
-				$facebook->log("Cluster query for: " . $friends['data'][$index]['id'] . " returned NULL, redo query.");
-				$queryresult = $facebook->api($param);
-				//sleep(1);
-			}
-			fputs($cluster, json_encode($queryresult));
-			//$facebook->log("Grabbing friends cluster for: " . $friends['data'][$index]['id']);
-			fclose($cluster);
+		$uids1 = array(); 
+		$uids2 = array(); 
+		for($repeat = 0; $repeat < ($friendslen - $index - 1); $repeat++){
+			$uids1[$repeat] = $friends['data'][$index]['id'];
+			$uids2[$repeat] = $friends['data'][$index + $repeat + 1]['id'];
 		}
-		catch(Exception $o){
-			$facebook->log("Legacy Api Calling Error:" . $o);
-		}
+		$uids1str = implode(",",$uids1);	  
+		$uids2str = implode(",",$uids2);	  
+		#echo "uids1: " . $uids1str . "<br>";
+		#echo "uids2: " . $uids2str . "<br>";
+		$params[] = array('method' => 'friends.areFriends', 'uids1' => $uids1str, 'uids2' => $uids2str);
+		$filenames[] = "tmp/" . $facebook->getUnique() . '/' . $friends['data'][$index]['id'] . '~cluster.request';
 	}
+	// Execute the call to retrieve the clusters
+	$failsafe = 30; // Just to prevent infinite loops in case the REST API goes down or something...
+	do
+	{
+		$failed = $facebook->apiQueue($params, $filenames);
+		$facebook->log("[APIQUEUE] There were " . count($failed) . " failed requests to the REST API. (will retry " . $failsafe . " times)");
+	} while(count($failed) > 0 && ($failsafe--) > 0);
 	echo '<pre>';
 	// Creates all the connections from our current user
 	$startobject = new User($me, 0);

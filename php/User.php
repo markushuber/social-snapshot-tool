@@ -77,8 +77,8 @@ class User extends Profile
 		$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true), 6);
 		//$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 9);
                 $this->connections->unshift(new Connection($json['id'] . '/tagged', $depth, "Taggable", true), 9);
-                $this->connections->unshift(new Connection($json['id'] . '/links', $depth, "Link", true), 5);/*
-			$this->connections->unshift(new Connection($json['id'] . '/photos', $depth, "Photo", true), 10);*/
+                $this->connections->unshift(new Connection($json['id'] . '/links', $depth, "Link", true), 5);
+		$this->connections->unshift(new Connection($json['id'] . '/photos', $depth, "Photo", true), 10);
                 $this->connections->unshift(new Connection($json['id'] . '/groups', $depth, "Group", true), 9);
                 //$this->connections->unshift(new Connection($json['id'] . '/albums', $depth - 1, "Album", true), 8);
                 $this->connections->unshift(new Connection($json['id'] . '/statuses', $depth, "Status", true), 5);

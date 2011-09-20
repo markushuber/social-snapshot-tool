@@ -515,7 +515,93 @@ public function api_multi()
     }
     return $result;
   }
+  
+  /**
+   * For each param->filename pair, invokes the old REST API using curl_multi.
+   * Note that the "params" parameter here is actually a two-dimensional array (think of it as the 'multi' variant of _restserver($params)).
+   * Returns an array of ($param, $filename) arrays that failed to be retrieved.
+   */
+  public function apiQueue($params, $filenames)
+  {
+    $handlers = array(); // Temporary storage for the cURL handlers so we can iterate over them
+    $failed = array();  
+    $mc = curl_multi_init();
+    
+    // Prepare all the requests and attach them to handlers
+    //URL is the same for all of them..
+    $url = $this->getApiUrl($params[0]['method']);
+    foreach($params as $i=>$param)
+    {
+      $param['api_key'] = $this->getAppId();
+      $param['format'] = 'json';
+      if (!isset($param['access_token'])) {
+        $session = $this->getSession();
+        // either user session signed, or app signed
+        if ($session) {
+          $param['access_token'] = $session['access_token'];
+        }
+      }
 
+      // json_encode all params values that are not strings
+      foreach ($param as $key => $value) {
+        if (!is_string($value)) {
+          $param[$key] = json_encode($value);
+        }
+      }
+      $ch = $this->constructRequest($this->getApiUrl($param['method']), $param);
+      curl_multi_add_handle($mc, $ch);
+      $handlers[$i] = $ch; 
+    }
+    
+    // Execute the requests
+    do
+    {
+      $execret = curl_multi_exec($mc, $running);
+    } while ($execret == CURLM_CALL_MULTI_PERFORM);
+    while($running && $execret == CURLM_OK)
+    {
+      $ready = curl_multi_select($mc);
+      if($ready != -1)
+      {
+        do
+        {
+          $execret = curl_multi_exec($mc, $running);
+        } while ($execret == CURLM_CALL_MULTI_PERFORM);
+      }
+    }
+    if($execret != CURLM_OK)
+    {
+      trigger_error("apiQueue Curl multi read error $execret\n", E_USER_WARNING);
+    }
+
+    // Handle the return values - if the returned content was empty, attach this request to the $failed array (which will be returned)
+    // Otherwise, writes the return value into the appropriate file
+    foreach($handlers as $i=>$handler)
+    {
+      $content = "";
+      $curlerror = curl_error($handler);
+      if("" == $curlerror)
+      {
+        $content = curl_multi_getcontent($handler);
+      }
+      else
+        $this->log("apiQueue Curl error on handle $i: $curlerror\n");
+      curl_multi_remove_handle($mc, $handler);
+      if(empty($content))
+      {
+        // Push the failed requests back on the call stack
+        $failed[] = array($params[$i], $filenames[$i]);
+      }
+      else
+      {
+        $outfile = fopen($filenames[$i], "w");
+        fwrite($outfile, $content);
+        fclose($outfile);
+      }
+    }
+    curl_multi_close($mc); 
+    return $failed;
+  }
   /**
    * Invoke the Graph API.
    *
@@ -548,7 +634,6 @@ public function api_multi()
 private function _graph_multi($method='GET', $params=array(array()), $callback="echo")
 {
 	$mc = curl_multi_init();
-
 	// FIRST: Prepare the parameters for all the requests.	
 	for($i=0;$i<count($params);$i++)
 	{
@@ -585,17 +670,16 @@ private function _graph_multi($method='GET', $params=array(array()), $callback="
 	}
 	
 	// THIRD: Go through all of these connections, replace it if it refers to an existing file, then construct the cURL multi request
-	foreach($connections as $connection)
+	foreach($connections as $i=>$connection)
 	{
-		 $this->log("[FILE] Checking if file exists - generating name...");
                 $fname = Connection::createSafeName($this, $connection->getUrl());
-                while(file_exists($fname) && filesize($fname)>0)
+                while(file_exists($fname))
 		{
-			fprintf($this->getLogFd(), "[FILE] Removing connection to already existing file ".$fname . "\n");
 			try
                         {
                                 $connectionarray = Facebook::getQueue()->shift(1);
-                                $connection = $connectionarray[0];
+				$this->log("Replacing connection " . $i . " pointing to " . $fname);
+                                $connections[$i] = $connection = $connectionarray[0];
                         }
                         catch(Exception $e)
                         {
@@ -613,11 +697,16 @@ private function _graph_multi($method='GET', $params=array(array()), $callback="
 			$url = $this->getUrl('graph', $connection->getUrl());
 		else
 			$url = $connection->getUrl();
+		$this->log("Constructing request to " . $url);
 		$ch = $this->constructRequest($url, $params[$i]);
 		if(!isset($params[$i]['access_token']))
                         $this->log("[ERROR] No access token set on request to " . $url . ", have to discard it.");
                 else
+		{
                         $channels[] = $ch;
+			// What is this i don't even
+			curl_multi_add_handle($mc, $ch);
+		}
 
 		$i++;		
 	}

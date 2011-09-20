@@ -34,12 +34,12 @@ if(isset($_GET['id']))
 	}
 	
 	// Open the output file for reading
-	$fp = fopen("tarballs/social" . $_GET['id'] . ".tar.bz2", "r");
+	$fp = fopen("tarballs/" . $_GET['id'] . ".tar.bz2", "r");
 	
 	// Send the appriopriate MIME type, content length and filename
 	header("Content-Type: application/x-bzip2");
-	header("Content-Length: " . filesize("tarballs/social" . $_GET['id'] . ".tar.bz2"));
-	header('Content-Disposition: attachment; filename="social'.$_GET["id"].'.tar.bz2"');
+	header("Content-Length: " . filesize("tarballs/" . $_GET['id'] . ".tar.bz2"));
+	header('Content-Disposition: attachment; filename="'.$_GET["id"].'.tar.bz2"');
 	
 	// Pass all data in the file through to the client
 	fpassthru($fp);
