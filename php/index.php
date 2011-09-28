@@ -43,7 +43,7 @@ require 'Message.php';
 
 header("Content-type: text/html; charset=utf-8");
 
-// Create the output directories for the application
+// Create the output directories for the application if they do not exist yet.
 if(!is_dir("tmp"))
 	mkdir("tmp/");
 if(!is_dir("logs"))
@@ -67,13 +67,18 @@ function readNode($facebook,$parent)
 	{
 		$facebook->api_multi('GET',Connection::createEmptyArray(), array("Connection", "recursor"));
 		$facebook->log(date("G:i:s D M j T Y") . " Returned into readNode(), " . Facebook::getQueue()->count() . " elements left, let's get back in there! Highest Level: " . Facebook::getQueue()->highestLevel());
-		if(Facebook::getQueue()->highestLevel()<3){
+		echo date("G:i:s D M j T Y") . " " . Facebook::getQueue()->count() . " elements left. Highest Level: " . Facebook::getQueue()->highestLevel() . "<br />";
+		if(Facebook::getQueue()->highestLevel()<3 || Facebook::getQueue()->count()<3 ){
 			$facebook->log("Finished. highestLevel: " . Facebook::getQueue()->highestLevel());
 		$facebook->log("Finished " . date("G:i:s D M j T Y"));
+		echo "Finished " . date("G:i:s D M j T Y");
 			$remaining = print_r(Facebook::getQueue(),true);
 			$facebook->log($remaining);
 			break;
 		}
+		//Flush the output
+		ob_flush();
+		flush();
 	}
         // Compress the gathered socialsnapshot		
 	// Tar and compress the logfile and folder
@@ -120,13 +125,13 @@ if ($me) {
 
 //Lots of memory
 ini_set('memory_limit', '512M');
-//Set timeout to 8h 
-set_time_limit(28800);
+//Set timeout to 1h 
+set_time_limit(3600);
 ?>
 <!doctype html>
 <html>
 <head>
-<title>Social Snapshot (max execution time: <?php echo ini_get('max_execution_time'); ?>)</title>
+<title>SocialSnapshot Facebook Application (max execution time: <?php echo ini_get('max_execution_time'); ?>)</title>
 <style>
 body {
 font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
@@ -158,22 +163,29 @@ text-decoration: underline;
 
 if(!isset($_GET['continue']))
 {
-  echo "<br />";	
+  // It's probably a safe assumption to use the & here (instead of checking if we need ?), the Graph API needs the access token in the URL anyway, so there are parameters.
+	if(!isset($_GET['sendid']))
+	{
+		echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=snapshot" . $facebook->getUnique() . "'>Continue</a></p>";
+	}
+	else{
+	//echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=" . $_GET['sendid'] . "'>Continue</a></p>";
+	echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y'>Continue</a></p>";
+	}
+
   $friends = $facebook->api('/me/friends');
   foreach($friends['data'] as $friend)
   {
     echo "<a class='friend' href='http://www.facebook.com/profile.php?id=" . $friend['id'] . "'>" . $friend['name'] . "</a><br />";	
   }
 
-  // It's probably a safe assumption to use the & here (instead of checking if we need ?), the Graph API needs the access token in the URL anyway, so there are parameters.
-  echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=" . $_GET['sendid'] . "'>Continue</a></p>";
   //Flush the output
   ob_flush();
   flush();
 }
 else
 { 
-  	echo "<a id='fetchlink' href='compress.php?id=" . $_GET['sendid'] . "'>Download your data here</a><br />";
+  	echo "<a id='fetchlink' target='_blank' href='compress.php?id=" . $_GET['sendid'] . "'>Download your data here</a><br />";
 	// If the user has supplied a token to be used for downloading the crawled data, handle it
 	if(isset($_GET['sendid']) && strlen($_GET['sendid']) > 0)
 	{
@@ -197,8 +209,12 @@ else
 	
 	// We have already fetched our own user, so we should print that into a file and then start crawling.
 	$mefp = fopen("tmp/" . $facebook->getUnique() . '/me.request', "w");
+	//Log start time for crawling
 	$facebook->log("Started " . date("G:i:s D M j T Y"));
-	//fputs($mefp, print_r($me, TRUE));
+	echo "Started " . date("G:i:s D M j T Y") . " social snapshot.<br />";
+  	//Flush the output
+  	ob_flush();
+  	flush();
 	fputs($mefp, json_encode($me));
 	fclose($mefp);
 	
@@ -217,23 +233,21 @@ else
 		}
 		$uids1str = implode(",",$uids1);	  
 		$uids2str = implode(",",$uids2);	  
-		#echo "uids1: " . $uids1str . "<br>";
-		#echo "uids2: " . $uids2str . "<br>";
 		$params[] = array('method' => 'friends.areFriends', 'uids1' => $uids1str, 'uids2' => $uids2str);
 		$filenames[] = "tmp/" . $facebook->getUnique() . '/' . $friends['data'][$index]['id'] . '~cluster.request';
 	}
 	// Execute the call to retrieve the clusters
-	$failsafe = 30; // Just to prevent infinite loops in case the REST API goes down or something...
+	$failsafe = 100; // Just to prevent infinite loops in case the REST API goes down or something...
 	do
 	{
 		$failed = $facebook->apiQueue($params, $filenames);
 		$facebook->log("[APIQUEUE] There were " . count($failed) . " failed requests to the REST API. (will retry " . $failsafe . " times)");
 	} while(count($failed) > 0 && ($failsafe--) > 0);
 	echo '<pre>';
+
 	// Creates all the connections from our current user
 	$startobject = new User($me, 0);
-
-	// Start crawling
+	// Start recursive crawling
 	readNode($facebook,$startobject);
 
 	echo '</pre>';

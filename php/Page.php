@@ -37,11 +37,11 @@ class Page extends Profile
 	{
 		$this->connections = new PriorityQueue();
 		$this->depth=$depth;
-		if(isset($json['id']) && is_numeric($json['id']))
-		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Page", false), 8);
 		if(!is_numeric($json['id']))
 			echo "[DEBUG] Rejected id " . htmlentities($json['id']);
 		/* No need for this information right now
+		if(isset($json['id']) && is_numeric($json['id']))
+		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Page", false), 8);
 		$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 8);
 		if($depth<2)
 		{

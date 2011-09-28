@@ -28,9 +28,9 @@ class Status extends APIObject
 	{
 		$this->connections = new PriorityQueue();
 		$this->depth=$depth;
+		/* No need so far
 		if(isset($json['id']) && is_numeric($json['id']))
 		                        $this->connections->unshift(new Connection(number_format($json['id'],0,'',''), $depth, "Status", false), 3);
-		/* No need so far
 		if(isset($json['from']['id']))
 			$this->connections->unshift(new Connection($json['from']['id'], $depth, "Profile", false));
 		$this->connections->unshift(new Connection($json['id'] . '/comments', $depth, "Comment", true));*/
