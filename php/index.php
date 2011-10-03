@@ -257,64 +257,12 @@ else
 
 <?php else: ?>
 <strong><em>You are not Connected.</em></strong>
-<h1>Social Snapshots</h1>
-<p>Welcome to the Social Snapshot website. Here, you can find all
-information necessary for running our nifty little tool.</p>
-<h2>Intro<br>
-</h2>
-<p>FBCrawl is, as the name suggests, a little crawler for Facebook. It
-utilises both client-side automatisation via Selenium and server-side
-crawling with the Graph API. The client part tries to find all mail
-addresses associated with your friends, whereas the server part simply
-crawls through as much data as possible, giving the user the
-possibility to download the findings later. The server assigns
-different priorities to different connections, resulting in rapid
-crawling of user-related data and slower crawling of data we deem not
-as important.
+<h1>Social Snapshot Facebook Application</h1>
 </p>
-<h2>How to run the tool?</h2>
-<p>First, you will need to launch a Selenium server.<br>
-<code>java -jar selenium-server.jar</code><br>
-Then, you can launch our Social Snapshot client. You have two options,
-either use a mail/password combination to log into Facebook, or sniff a
-cookie off the wire and use that.<br>
-<code>java -jar fbcrawl.jar mail@domain.tld passW0rD</code><br>
-<code>java -jar fbcrawl.jar cookietextgoeshere</code><br>
-The output of Social Snapshot consists of three main parts: First, a
-few HTTP headers you'll most likely want to ignore; then, a URL under
-which you can later retrieve all the crawled Graph data; And finally
-the tool will create a text file with crawled contact information in
-the results directory. e.g. results/fbcrawl1300100492559.dat<br>
-<br>
-ID&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-Name&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-Mobile/AIM&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; Email in cleartext or URI
-to Email Image<br>
+<h2>Source Code and Documentation</h2>
+<p>This Facebook application is part of the <a href="http://socialsnapshot.nysos.net" target="_blank">SocialSnapshot tool</a>, which is available at:<br>
+<a href="https://github.com/mleithner/SocialSnapshot" target="_blank">SocialSnapshot github repository</a>
 </p>
-<p><small>1111111 &nbsp;&nbsp; Sam Pullman &nbsp;&nbsp;
-+1123123123Mobile,&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;
-/string_image.php?ct=AQDYPM-yg737Q9ZqhEGsZLbqZtYFfW7oYwKVF-IRJAwiO1WgsaTdb8XlbEJjBbZyHKtghkYbc5JQFPtHpa-Y-ZiU&amp;fp=8.7</small><br>
-</p>
-<h2>So what about the Graph data?</h2>
-<p>The FBCrawl client output will contain a line like this:<br>
-<code>You can receive the downloaded graph data at
-http://puffy.nysos.net/socialsnapshot/php/compress.php?id=foobar</code><br>
-If you retrieve this URL, you will receive a tar.bz2 file. Unpacking it
-will yield a log file and a folder that contains the downloaded data.<br>
-The files in this folder will look something like this:<br>
-</p>
-<pre>100001309710131~friends.request<br>100001309710131~groups.request<br>104023582966124.request<br>105638732803523.request<br>111165112241092.request<br>2209917988~members.request<br>369139481001~members.request<br>MTAwMDAxMzA5NzEwMTMxL3BpY3R1cmU=<br>me.request<br></pre>
-<br>
-Now, this may look confusing at first, but if you know what Graph API
-requests look like, you'll recognize the pattern. The first part of all
-files that end in .request is the ID of an object in the API; the part
-after the tilde specifies a certain connection. For instance, <code>100001309710131~friends.request</code>
-means "all friends of the object with the ID 100001309710131".<br>
-But what about those Base64 encoded strings? When our Graph API Crawler
-stores pictures, it simply sets the file name to the base64 encoded
-version of their name. So these files will always contain images.
 <?php endif ?>
 
 </body>

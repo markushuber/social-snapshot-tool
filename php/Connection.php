@@ -72,7 +72,7 @@ class Connection
 	*/
 	public static function createSafeName($facebook, $url)
 	{
-		$safename =  "tmp/" . $facebook->getUnique() . "/" .strtr($url, "/&?", "~-_") . ".request";
+		$safename =  "tmp/" . $facebook->getUnique() . "/" .substr(strtr($url, "/&?", "~-_"), 0, 200) . ".request";
 		$facebook->log("[FILE] Safename " . $safename . " generated");
 		return $safename;
 	}

@@ -812,7 +812,7 @@ private function _graph_multi($method='GET', $params=array(array()), $callback="
   protected function makeRequest($url, $params, $ch=null) {
     $ch = $this->constructRequest($url, $params, $ch);
     $result = curl_exec($ch);
-    curl_close($ch);
+    @curl_close($ch);
     return $result;
   }
 
@@ -831,12 +831,12 @@ private function _graph_multi($method='GET', $params=array(array()), $callback="
     // Slightly inefficient because we're refreshing a few handlers twice at the beginning...
     if($this->handlerindex < PriorityQueue::$POPCNT)
     {
-        curl_close($this->handlers[$this->handlerindex + PriorityQueue::$POPCNT]);
+        @curl_close($this->handlers[$this->handlerindex + PriorityQueue::$POPCNT]);
 	$this->handlers[$this->handlerindex + PriorityQueue::$POPCNT] = curl_init();
     }
     else
     {
-	curl_close($this->handlers[$this->handlerindex - PriorityQueue::$POPCNT]);
+	@curl_close($this->handlers[$this->handlerindex - PriorityQueue::$POPCNT]);
 	$this->handlers[$this->handlerindex - PriorityQueue::$POPCNT] = curl_init();
     }
     $this->log("Handing out handler " . $this->handlerindex);
