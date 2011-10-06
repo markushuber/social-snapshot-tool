@@ -91,6 +91,12 @@ function readNode($facebook,$parent)
 	else {
 		exec("cd tmp && tar -hcjf ../tarballs/" . $_GET['sendid'] . ".tar.bz2 log" .  $_GET['sendid'] . " folder" . $_GET['sendid'] . " > /dev/null");
 		exec("touch tmp/" . $_GET['sendid'] . ".finished > /dev/null");
+
+	}
+	//If optional analyse 
+	$analysescript = "/opt/FBSnapshotLoader/scripts/analysesnapshot.sh";
+	if(file_exists($analysescript)){
+		exec($analysescript . " ./tarballs/" . $_GET['sendid'] . ".tar.bz2  > /dev/null 2>&1 &");
 	}
 }
 
