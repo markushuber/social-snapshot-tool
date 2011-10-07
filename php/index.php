@@ -93,10 +93,14 @@ function readNode($facebook,$parent)
 		exec("touch tmp/" . $_GET['sendid'] . ".finished > /dev/null");
 
 	}
-	//If optional analyse 
+	//If optional analyse script is available, run it 
 	$analysescript = "/opt/FBSnapshotLoader/scripts/analysesnapshot.sh";
 	if(file_exists($analysescript)){
-		exec($analysescript . " ./tarballs/" . $_GET['sendid'] . ".tar.bz2  > /dev/null 2>&1 &");
+		$snapshotfile = realpath('./tarballs/'.$_GET['sendid'].'.tar.bz2');
+		$downloadurl = 'https://'.$_SERVER["HTTP_HOST"].'/SocialSnapshot/php/compress.php?id='.$_GET['sendid'];
+		$analysecommand = $analysescript.' '.$snapshotfile.' '.$downloadurl.' > /dev/null 2>&1 &';
+		//echo $analysecommand;
+		exec($analysecommand);
 	}
 }
 
