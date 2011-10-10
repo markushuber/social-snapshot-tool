@@ -42,6 +42,8 @@ require 'Link.php';
 require 'Message.php';
 
 header("Content-type: text/html; charset=utf-8");
+header("Cache-Control: no-cache");
+header("Expires: -1");
 
 // Create the output directories for the application if they do not exist yet.
 if(!is_dir("tmp"))
@@ -180,7 +182,7 @@ if(!isset($_GET['continue']))
 	}
 	else{
 	//echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=" . $_GET['sendid'] . "'>Continue</a></p>";
-	echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y'>Continue</a></p>";
+	echo "<p><h2><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y'>Start Social Snapshot (Continue)</a></h2></p>";
 	}
 
   $friends = $facebook->api('/me/friends');
