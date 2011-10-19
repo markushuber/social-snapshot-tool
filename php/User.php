@@ -74,7 +74,7 @@ class User extends Profile
 			}
 		}
                 $this->connections->unshift(new Connection($json['id'] . '/home', $depth, "Post", true), 6);
-		$this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true), 6);
+		if($depth<2) $this->connections->unshift(new Connection($json['id'] . '/feed', $depth, "Post", true), 6);
 		//$this->connections->unshift(new Connection($json['id'] . '/picture', $depth, "Picture", false), 9);
                 $this->connections->unshift(new Connection($json['id'] . '/tagged', $depth, "Taggable", true), 9);
                 $this->connections->unshift(new Connection($json['id'] . '/links', $depth, "Link", true), 5);

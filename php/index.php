@@ -41,17 +41,10 @@ require 'Video.php';
 require 'Link.php';
 require 'Message.php';
 
+//Header for utf-8 support and caching disabled
 header("Content-type: text/html; charset=utf-8");
-header("Cache-Control: no-cache");
+header("Cache-Control: no-cache, must-revalidate");
 header("Expires: -1");
-
-// Create the output directories for the application if they do not exist yet.
-if(!is_dir("tmp"))
-	mkdir("tmp/");
-if(!is_dir("logs"))
-	mkdir("logs/");
-if(!is_dir("tarballs"))
-	mkdir("tarballs/");
 
 // Create our Application instance.
 $facebook = new Facebook(array(
@@ -60,46 +53,98 @@ $facebook = new Facebook(array(
 'cookie' => $_cookie,
 ));
 
-function readNode($facebook,$parent)
+//Flush the output buffer
+function flushOutput(){
+	//Flush the output
+	ob_flush();
+	flush();
+}
+
+function createDir($dir){
+//In case out directory does not exist create it.
+//Also create empty index.html to ommit dir listings
+	if(!is_dir($dir)){
+		mkdir($dir);
+		touch($dir . 'index.html');
+	}	
+}
+
+
+// Create the output directories for application, in case they do not exist yet.
+createDir("../tmp/");
+createDir("../logs/");
+createDir("../tarballs/");
+createDir("../downloads/");
+
+//Function that fetches friends are friends information from Facebook user
+function readCluster($facebook){
+//Get friends cluster information
+$friends = $facebook->api('/me/friends');
+$friendslen = count($friends['data']);
+$params = array();
+$filenames = array();
+for($index = 0; $index < ($friendslen - 1); $index++)
+{
+$uids1 = array();
+$uids2 = array();
+for($repeat = 0; $repeat < ($friendslen - $index - 1); $repeat++){
+$uids1[$repeat] = $friends['data'][$index]['id'];
+$uids2[$repeat] = $friends['data'][$index + $repeat + 1]['id'];
+}
+$uids1str = implode(",",$uids1);
+$uids2str = implode(",",$uids2);
+$params[] = array('method' => 'friends.areFriends', 'uids1' => $uids1str, 'uids2' => $uids2str);
+$filenames[] = "../tmp/" . $facebook->getUnique() . '/' . $friends['data'][$index]['id'] . '~cluster.request';
+}
+	// Execute the call to retrieve the clusters
+$failsafe = 100; // Just to prevent infinite loops in case the REST API goes down or something...
+do
+{
+$failed = $facebook->apiQueue($params, $filenames);
+$facebook->log("[APIQUEUE] There were " . count($failed) . " failed requests to the REST API. (will retry " . $failsafe . " times)");
+	} while(count($failed) > 0 && ($failsafe--) > 0);
+}
+	
+//readNode the function that does the actual fetching of Facebook requests. Once finished it creates a tarball.
+function readNode($facebook,$parent,$sendid)
 {
 	//echo "readNode()<br />";
 	$connections = $parent->getConnections();
-	
+	echo "<pre>";
 	while(Facebook::getQueue()->count()>0)
 	{
 		$facebook->api_multi('GET',Connection::createEmptyArray(), array("Connection", "recursor"));
 		$facebook->log(date("G:i:s D M j T Y") . " Returned into readNode(), " . Facebook::getQueue()->count() . " elements left, let's get back in there! Highest Level: " . Facebook::getQueue()->highestLevel());
-		echo date("G:i:s D M j T Y") . " " . Facebook::getQueue()->count() . " elements left. Highest Level: " . Facebook::getQueue()->highestLevel() . "<br />";
+		echo date("G:i:s D M j T Y") . " " . Facebook::getQueue()->count() . " elements left. Highest Level: " . Facebook::getQueue()->highestLevel() ."<br/>";
 		if(Facebook::getQueue()->highestLevel()<3 || Facebook::getQueue()->count()<3 ){
 			$facebook->log("Finished. highestLevel: " . Facebook::getQueue()->highestLevel());
 		$facebook->log("Finished " . date("G:i:s D M j T Y"));
-		echo "Finished " . date("G:i:s D M j T Y");
+		echo "</pre><h4>Finished " . date("G:i:s D M j T Y") . "</h4>";
 			$remaining = print_r(Facebook::getQueue(),true);
 			$facebook->log($remaining);
 			break;
 		}
-		//Flush the output
-		ob_flush();
-		flush();
+		flushOutput();
 	}
         // Compress the gathered socialsnapshot		
 	// Tar and compress the logfile and folder
 	// Check if the token is valid (must not contain anything but alphanumeric plus _) and if the folder and logs for this run really exist
-	if(0!=preg_match("/[^\w]/", $_GET['sendid']) || !file_exists("tmp/folder" . $_GET['sendid']) || !file_exists("tmp/log" . $_GET['sendid']))
+	if(0!=preg_match("/[^\w]/", $sendid) || !file_exists("../tmp/folder" . $sendid) || !file_exists("../tmp/log" . $sendid))
 	{
 		// Die otherwise
 		die("Compression Failed: Could not find according socialsnapshot and log.");
 	}
 	else {
-		exec("cd tmp && tar -hcjf ../tarballs/" . $_GET['sendid'] . ".tar.bz2 log" .  $_GET['sendid'] . " folder" . $_GET['sendid'] . " > /dev/null");
-		exec("touch tmp/" . $_GET['sendid'] . ".finished > /dev/null");
-
+		exec("cd ../tmp && tar -hcjf ../tarballs/" . $sendid . ".tar.bz2 log" .  $sendid . " folder" . $sendid . " > /dev/null");
+		exec("touch ../tmp/" . $sendid . ".finished > /dev/null");
+		exec("rm -r ../tmp/logsnapshot" .$sendid . " ../tmp/folder" . $sendid ." > /dev/null");
+		exec("rm -r ../tmp/" . $facebook->getUnique() ." > /dev/null");
 	}
 	//If optional analyse script is available, run it 
 	$analysescript = "/opt/FBSnapshotLoader/scripts/analysesnapshot.sh";
 	if(file_exists($analysescript)){
-		$snapshotfile = realpath('./tarballs/'.$_GET['sendid'].'.tar.bz2');
-		$downloadurl = 'https://'.$_SERVER["HTTP_HOST"].'/SocialSnapshot/php/compress.php?id='.$_GET['sendid'];
+		$snapshotfile = realpath('../tarballs/'.$sendid.'.tar.bz2');
+		$downloadurl = 'https://'.$_SERVER["HTTP_HOST"].'/SocialSnapshot/downloads';
 		$analysecommand = $analysescript.' '.$snapshotfile.' '.$downloadurl.' > /dev/null 2>&1 &';
 		//echo $analysecommand;
 		exec($analysecommand);
@@ -155,10 +200,10 @@ color: #3b5998;
 h1 a:hover {
 text-decoration: underline;
 }
+a.friend {font-size:10px;}
 </style>
 </head>
 <body>
-
 <?php if ($me): ?>
 <a href="<?php echo $logoutUrl; ?>">
 <img src="http://static.ak.fbcdn.net/rsrc.php/z2Y31/hash/cxrz4k7j.gif">
@@ -169,113 +214,92 @@ text-decoration: underline;
 </a>
 <?php endif ?>
 <?php if ($me): ?>
-<?php 
-
-
-
-if(!isset($_GET['continue']))
+<?php
+echo "<h3>Fetching your Facebook account data...</h3>";
+$sendid="";
+// It's probably a safe assumption to use the & here (instead of checking if we need ?), the Graph API needs the access token in the URL anyway, so there are parameters.
+if(!isset($_GET['sendid']))
 {
-  // It's probably a safe assumption to use the & here (instead of checking if we need ?), the Graph API needs the access token in the URL anyway, so there are parameters.
-	if(!isset($_GET['sendid']))
+	$sendid = "snapshot" . $facebook->getUnique();
+}
+else{
+	$sendid = $_GET['sendid'];
+}
+
+echo "<h3>Once finished, an email will be send to: " . $me['email'] . "</h3>";
+echo "Profiles of friends included in social snapshot:<br/>";
+$friends = $facebook->api('/me/friends');
+foreach($friends['data'] as $friend)
+{
+	echo "<a class='friend' href='http://www.facebook.com/profile.php?id=" . $friend['id'] . "'>" . $friend['name'] . "</a>&nbsp;";
+}
+flushOutput();
+
+// If the user has supplied a token to be used for downloading the crawled data, handle it
+if($sendid && strlen($sendid) > 0)
+{
+	// Print a message to the log file
+	fprintf($facebook->getLogFd(), "Sendid found: " . $sendid . "\n");
+
+	// The token must not contain any characters but alphanumeric and _
+	if(0==preg_match("/[^\w]/",$sendid))
 	{
-		echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=snapshot" . $facebook->getUnique() . "'>Continue</a></p>";
+		fprintf($facebook->getLogFd(), "Regex passed, symlinking...\n");
+		symlink($facebook->getUnique(), "../tmp/folder" . $sendid);
+		symlink("../logs/facebook" . $facebook->getUnique() . ".log", "../tmp/log" . $sendid);
 	}
 	else{
-	//echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=" . $_GET['sendid'] . "'>Continue</a></p>";
-	echo "<p><h2><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y'>Start Social Snapshot (Continue)</a></h2></p>";
+		die("Malformed sendid :-(");
 	}
-
-  $friends = $facebook->api('/me/friends');
-  foreach($friends['data'] as $friend)
-  {
-    echo "<a class='friend' href='http://www.facebook.com/profile.php?id=" . $friend['id'] . "'>" . $friend['name'] . "</a><br />";	
-  }
-
-  //Flush the output
-  ob_flush();
-  flush();
 }
-else
-{ 
-  	echo "<a id='fetchlink' target='_blank' href='compress.php?id=" . $_GET['sendid'] . "'>Download your data here</a><br />";
-	// If the user has supplied a token to be used for downloading the crawled data, handle it
-	if(isset($_GET['sendid']) && strlen($_GET['sendid']) > 0)
-	{
-		// Print a message to the log file
-		fprintf($facebook->getLogFd(), "Sendid found: " . $_GET['sendid'] . "\n");
-
-		// The token must not contain any characters but alphanumeric and _
-		if(0==preg_match("/[^\w]/",$_GET['sendid']))
-		{
-			fprintf($facebook->getLogFd(), "Regex passed, symlinking...\n");
-			symlink($facebook->getUnique(), "tmp/folder" . $_GET['sendid']);
-			symlink("../logs/facebook" . $facebook->getUnique() . ".log", "tmp/log" . $_GET['sendid']);
-		}
-	}
-	else
-		fprintf($facebook->getLogFd(), "No sendid specified.\n");
-
-	// Create the output directory if it doesn't exist
-	if(!is_dir($facebook->getUnique()))
-		mkdir("tmp/" . $facebook->getUnique());
-	
-	// We have already fetched our own user, so we should print that into a file and then start crawling.
-	$mefp = fopen("tmp/" . $facebook->getUnique() . '/me.request', "w");
-	//Log start time for crawling
-	$facebook->log("Started " . date("G:i:s D M j T Y"));
-	echo "Started " . date("G:i:s D M j T Y") . " social snapshot.<br />";
-  	//Flush the output
-  	ob_flush();
-  	flush();
-	fputs($mefp, json_encode($me));
-	fclose($mefp);
-	
-	//Get friends cluster information
-	$friends = $facebook->api('/me/friends');
-	$friendslen = count($friends['data']);
-	$params = array();
-	$filenames = array();
-	for($index = 0; $index < ($friendslen - 1); $index++)
-	{
-		$uids1 = array(); 
-		$uids2 = array(); 
-		for($repeat = 0; $repeat < ($friendslen - $index - 1); $repeat++){
-			$uids1[$repeat] = $friends['data'][$index]['id'];
-			$uids2[$repeat] = $friends['data'][$index + $repeat + 1]['id'];
-		}
-		$uids1str = implode(",",$uids1);	  
-		$uids2str = implode(",",$uids2);	  
-		$params[] = array('method' => 'friends.areFriends', 'uids1' => $uids1str, 'uids2' => $uids2str);
-		$filenames[] = "tmp/" . $facebook->getUnique() . '/' . $friends['data'][$index]['id'] . '~cluster.request';
-	}
-	// Execute the call to retrieve the clusters
-	$failsafe = 100; // Just to prevent infinite loops in case the REST API goes down or something...
-	do
-	{
-		$failed = $facebook->apiQueue($params, $filenames);
-		$facebook->log("[APIQUEUE] There were " . count($failed) . " failed requests to the REST API. (will retry " . $failsafe . " times)");
-	} while(count($failed) > 0 && ($failsafe--) > 0);
-	echo '<pre>';
-
-	// Creates all the connections from our current user
-	$startobject = new User($me, 0);
-	// Start recursive crawling
-	readNode($facebook,$startobject);
-
-	echo '</pre>';
+else {
+	fprintf($facebook->getLogFd(), "No sendid specified.\n");
+	die("No sendid found :-(");
 }
+// Create the output directory if it doesn't exist
+if(!is_dir($facebook->getUnique()))
+mkdir("../tmp/" . $facebook->getUnique());
 
+// We have already fetched our own user, so we should print that into a file and then start crawling.
+$mefp = fopen("../tmp/" . $facebook->getUnique() . '/me.request', "w");
+//Log start time for crawling
+$facebook->log("Started " . date("G:i:s D M j T Y"));
+echo "<h4>Started " . date("G:i:s D M j T Y") . " social snapshot.</h4>";
+flushOutput();
+fputs($mefp, json_encode($me));
+fclose($mefp);
+
+//Get Cluster information for current user
+readCluster($facebook);
+
+// Creates all the connections from our current user
+$startobject = new User($me, 0);
+
+// Start recursive crawling
+readNode($facebook,$startobject,$sendid);
+
+//Output link to download
+echo "<br/><a id='fetchlink' target='_blank' href='download.php?id=" . $sendid . "'>Download your data here</a><br />";
+
+//Redirect to Thank You page once finished
+//header("Location: thankyou.php?snapshotid=".$sendid."&email=".$me['email']);
+
+//Dirty JavaScript redirect
+echo "<script type=\"text/javascript\">";
+echo "window.location = \"thankyou.php?snapshotid=".$sendid."&email=".$me['email']."\";";
+echo "</script>";
 ?>
 
 <?php else: ?>
-<strong><em>You are not Connected.</em></strong>
-<h1>Social Snapshot Facebook Application</h1>
+<h2>WELCOME to the SocialSnapshot Facebook App</h2>
+<!-- <h4>Source Code and Documentation</h4> -->
+<p>This Facebook app is part of the <a href="http://socialsnapshot.nysos.net" target="_blank">SocialSnapshot tool</a>.<br/>
+The source code is available at: 
+<a href="https://github.com/mleithner/SocialSnapshot" target="_blank">https://github.com/mleithner/SocialSnapshot</a><br/>
+&copy; SBA Research gGmbH, 2011
 </p>
-<h2>Source Code and Documentation</h2>
-<p>This Facebook application is part of the <a href="http://socialsnapshot.nysos.net" target="_blank">SocialSnapshot tool</a>, which is available at:<br>
-<a href="https://github.com/mleithner/SocialSnapshot" target="_blank">SocialSnapshot github repository</a>
-</p>
+<h2><a href="<?php echo $loginUrl; ?>">Start SocialSnapshot information gathering &raquo;</a></h2>
+<!-- <strong><em>Click "Connect with Facebook" below, to start social snapshot.<br/></em></strong> -->
 <?php endif ?>
-
 </body>
 </html>

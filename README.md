@@ -27,4 +27,4 @@
 * Local files in /results snapshot11111.csv snapshot11111.log
 ## socialsnapshot data from third-party application
 * Client will return an URI to fetch data
-* e.g. http://test.com/SocialSnapshot/php/compress.php?id=snapshot11111
+* e.g. http://test.com/SocialSnapshot/php/download.php?id=snapshot11111

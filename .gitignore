@@ -1,6 +1,7 @@
-php/tmp
-php/tarballs
-php/logs
+tmp
+tarballs
+logs
+downloads
 php/settings.inc.php
 java/socialsnapshot.config
 java/results

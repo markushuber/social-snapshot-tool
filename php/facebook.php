@@ -108,7 +108,7 @@ class Facebook
    public function getLogFd()
    {
 	if(!isset($this->logfd))
-		$this->logfd = fopen("logs/facebook" . $this->getUnique() . ".log", "w");
+		$this->logfd = fopen("../logs/facebook" . $this->getUnique() . ".log", "w");
 	return $this->logfd;
    }
    public function log($string)

@@ -72,7 +72,15 @@ class Connection
 	*/
 	public static function createSafeName($facebook, $url)
 	{
-		$safename =  "tmp/" . $facebook->getUnique() . "/" .substr(strtr($url, "/&?", "~-_"), 0, 200) . ".request";
+		$safename =  "../tmp/" . $facebook->getUnique() . "/" .strtr($url, "/&?", "~-_") . ".request";
+		//Remove access token from filename
+		$tokenstart = 'method';
+		$tokenend = 'limit';
+		$tokenstartpos = strpos($safename,$tokenstart);
+		if($tokenstartpos){
+			$tokenendpos = strpos($safename,$tokenend);
+			$safename = substr($safename,0,$tokenstartpos) . substr($safename,$tokenendpos,strlen($safename));
+		}
 		$facebook->log("[FILE] Safename " . $safename . " generated");
 		return $safename;
 	}
@@ -86,8 +94,8 @@ class Connection
         public function fetch($facebook)
        	{
 		// If the folder for our output files doesn't exist yet, create it
-		if(!is_dir("tmp/" . $facebook->getUnique()))
-			mkdir("tmp/" . $facebook->getUnique());
+		if(!is_dir("../tmp/" . $facebook->getUnique()))
+			mkdir("../tmp/" . $facebook->getUnique());
 
 		// Create a safe file name. Simply replaces all slashes, actually.
 		//TODO: Write this platform-independent-safe
@@ -98,8 +106,8 @@ class Connection
 		if($this->type=='Picture')
 		{
 			fprintf($facebook->getLogFd(), "Writing picture with filesize " . strlen($this->json) . "\n");	
-			if(!file_exists("tmp/" . $facebook->getUnique() . "/" . base64_encode($this->url)))
-				file_put_contents("tmp/" . $facebook->getUnique() . "/" .base64_encode($this->url), $this->json);
+			if(!file_exists("../tmp/" . $facebook->getUnique() . "/" . base64_encode($this->url)))
+				file_put_contents("../tmp/" . $facebook->getUnique() . "/" .base64_encode($this->url), $this->json);
 			return new Picture("",0);
 		}
 
