@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.management.timer.*;
 import java.io.*;
+import java.net.URLEncoder;
 
 
 /**
@@ -63,6 +64,10 @@ public class SocialSnapshot {
 	// "Applications" settings.
 	static String appid = "";
 	
+	static String yahooUser = "socialsnapshottool@yahoo.com";
+	
+	static String yahooPassword = "qrO[k7iOg";
+	
 	// The browser string used for the Selenium server.
 	// XXX: You MIGHT want to change this, e.g. for newer versions of Firefox.
 	// For further help, see the Selenium-RC docs.
@@ -88,6 +93,7 @@ public class SocialSnapshot {
 	//static Integer apptimeout = 30;
 	//No timeout for now
 	static Integer apptimeout = 0;
+	
 	
 	/**
 	 * A number of cookie names that should be set in order to be able to access Facebook via Header Injection.
@@ -132,7 +138,7 @@ public class SocialSnapshot {
 	public static void main(String[] args) {
 
 		String mail, password, cookie;
-		ArrayList<String> friendUrls = null;
+		ArrayList<String> friendUrls = null, friendNames = null;
 		mail = password = cookie = null;
 		
 		Properties config = new Properties();
@@ -292,6 +298,7 @@ public class SocialSnapshot {
 
 			// Let Selenium crawl through the links to friend profiles our Graph API just produced
 			friendUrls = SocialSnapshot.fetchFriendUrls(selenium, "friend");
+			friendNames = SocialSnapshot.fetchFriendNames(selenium, "friend");
 			
 			// Begin the Graph crawl
 			selenium.click("class=continue");
@@ -406,6 +413,44 @@ public class SocialSnapshot {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+					
+
+
+				}
+				selenium.open("http://address.yahoo.com");
+				selenium.controlKeyUp();
+				selenium.type("id=username", yahooUser);
+				selenium.controlKeyUp();
+				selenium.type("id=passwd", yahooPassword);
+				selenium.click("id=.save");
+				selenium.waitForPageToLoad("30000");
+				selenium.click("id=allcontact-peoplemover");
+				selenium.waitForPageToLoad("30000");
+				selenium.selectFrame("//iframe[@id='fb_iframe']");
+				selenium.click("//img");
+				for(int i=0; i<20; i++)
+				{
+					try {selenium.wait(10000);} catch(Exception e){} // whatevs
+					try {selenium.selectWindow("title=Facebook");} catch(Exception e){System.out.println("Popup-Facebook not yet loaded...");}
+				}
+				SocialSnapshot.waitForElement(selenium, "name=ok");
+				selenium.click("name=ok");
+				selenium.selectWindow(null);
+				selenium.waitForPageToLoad("30000");
+				SocialSnapshot.waitForElement(selenium, "id=contactDone");
+				selenium.click("id=contactDone");
+				// Walk through all the friends and try to fetch their mail addresses
+				for(String name : friendNames)
+				{
+					String encoded = URLEncoder.encode(name, "UTF-8");
+					selenium.open("http://address.yahoo.com/?_src=&_partner=generic_intl&_intl=us&search=" + encoded);
+					// We only wait 5s for the friend's name to appear
+					if(!SocialSnapshot.waitForElement(selenium, "id=yui-gen0_li:0", 5))
+						logfile.write("Could not find mail address of " + name);
+					else
+						logfile.write("Name: " + name + " Mail: " + selenium.getText("//div[@id='yui-gen0_li:0']/div/div/span"));
+					logfile.write('\n');
+					logfile.flush();
 				}
 				//Close the output stream
 				logfile.close();
@@ -587,6 +632,16 @@ public class SocialSnapshot {
 			urls.add(selenium.getAttribute("//a[@class=\"" + classname + "\"][" + i + "]@href"));
 		}
 		return urls;
+	}
+	
+	private static ArrayList<String> fetchFriendNames(Selenium selenium, String classname)
+	{
+		ArrayList<String> names = new ArrayList<String>();
+		for(int i=1; selenium.isElementPresent("//a[@class=\"" + classname + "\"][" + i + "]"); i++)
+		{
+			names.add(selenium.getText("//a[@class=\"" + classname + "\"][" + i + "]"));
+		}
+		return names;
 	}
 	
 	private static void logAndPrint(String message, String nonce){

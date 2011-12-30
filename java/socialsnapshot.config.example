@@ -1,3 +1,5 @@
 #Example configuration for SocialSnapshot client
 appid=0000000000000000
 graphHost=http://httpserver.example.net/SocialSnapshot/php/
+yahooUser=id@yahoo.com
+yahooPassword=xxxxxxxxxxxxxxxxxxx
