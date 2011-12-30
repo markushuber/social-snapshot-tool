@@ -209,6 +209,7 @@ flushOutput();
 
 <?php else: ?>
 <h2>SocialSnapshot Survey</h2>
+<h3>After adding the app, you will receive an Email with a link to download all your Facebook data.</h3>
 
 <?php
 	if (isset($_GET['submit']) && isset($_GET['optin'])){

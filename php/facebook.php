@@ -170,6 +170,12 @@ class Facebook
    * The active user session, if one is available.
    */
   private $session;
+  
+  /**
+   * Access token override - if this value is set, it will be used 
+   * as the access token returned by getAccessToken().
+   */
+  private $access_token;
 
   /**
    * Indicates that we already loaded the session as best as we could.
@@ -357,6 +363,32 @@ class Facebook
   }
 
   /**
+   * This method enables us to override the access token for offline auth.
+   */
+  public function getAccessToken()
+  {
+     if($this->access_token)
+       return $this->access_token;
+     else
+     {
+       $session = $this->getSession();
+       if($session)
+         return $session['access_token'];
+       return null;
+     }
+  }
+
+  /**
+   * Overrides the access token used throughout the application.
+   */
+  public function setAccessToken($token)
+  {
+    if($this->access_token)
+      $this->log("WARNING: You are overwriting the already customised access token.");
+    $this->access_token = $token;
+  }
+
+  /**
    * Get the UID from the session.
    *
    * @return String the UID if available
@@ -372,12 +404,8 @@ class Facebook
 	*/
 	public function getGraphUrl($object="me",$params=array())
 	{
-		if (!isset($params['access_token'])) {
-      $session = $this->getSession();
-      // either user session signed, or app signed
-      if ($session) {
-        $params['access_token'] = $session['access_token'];
-    }
+		if (!isset($params['access_token'])) 
+        		$params['access_token'] = $this->getAccessToken();
 
     // json_encode all params values that are not strings
     foreach ($params as $key => $value) {
@@ -385,7 +413,6 @@ class Facebook
         $params[$key] = json_encode($value);
       }
     }
-}
 
 		return $this->getUrl('graph', $object, $params);
 	}
@@ -535,11 +562,7 @@ public function api_multi()
       $param['api_key'] = $this->getAppId();
       $param['format'] = 'json';
       if (!isset($param['access_token'])) {
-        $session = $this->getSession();
-        // either user session signed, or app signed
-        if ($session) {
-          $param['access_token'] = $session['access_token'];
-        }
+          $param['access_token'] = $this->getAccessToken();
       }
 
       // json_encode all params values that are not strings
@@ -639,13 +662,7 @@ private function _graph_multi($method='GET', $params=array(array()), $callback="
 	{
 		$params[$i]['method'] = $method;
 		if(!isset($params[$i]['access_token']))
-                {
-                        $session = $this->getSession();
-                        if($session)
-                        {
-                                $params[$i]['access_token'] = $session['access_token'];
-                        }
-                }
+                	$params[$i]['access_token'] = $this->getAccessToken();
                 foreach(array_keys($params[$i]) as $j)
                 {
                         if(!is_string($params[$i][$j]))
@@ -777,14 +794,7 @@ private function _graph_multi($method='GET', $params=array(array()), $callback="
    */
   private function _oauthRequest($url, $params) {
     if (!isset($params['access_token'])) {
-      $session = $this->getSession();
-      // either user session signed, or app signed
-      if ($session) {
-        $params['access_token'] = $session['access_token'];
-      } else {
-        // TODO (naitik) sync with abanker
-        //$params['access_token'] = $this->getAppId() .'|'. $this->getApiSecret();
-      }
+      $params['access_token'] = $this->getAccessToken();
     }
 
     // json_encode all params values that are not strings

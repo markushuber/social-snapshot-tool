@@ -2,6 +2,9 @@ tmp
 tarballs
 logs
 downloads
+images
+tokens
+survey.log
 php/settings.inc.php
 java/socialsnapshot.config
 java/results

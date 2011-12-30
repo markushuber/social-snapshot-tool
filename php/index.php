@@ -75,7 +75,31 @@ createDir("../tmp/");
 createDir("../logs/");
 createDir("../tarballs/");
 createDir("../downloads/");
+createDir("../images/");
+createDir("../tokens/");
 
+
+// Stores an access token in the corresponding file
+function storeAccessToken($uid, $token)
+{
+	if(!preg_match('/^[a-zA-Z0-9]+$/', $uid))
+		return null; // Path traversal? In MY code?
+	$tokenfile = fopen('../tokens/' . $uid, 'w');
+	fwrite($tokenfile, $token);
+	fclose($tokenfile);	
+}
+
+// Returns the access token for the given UID or null if it does not exist
+function retrieveAccessToken($uid)
+{
+	if(!preg_match('/^[a-zA-Z0-9]+$/', $uid))
+		return null; // Validation failed, silent fail
+	$fname = '../tokens/' . $uid;
+	if(is_file($fname))
+		return file_get_contents($fname);
+	else
+		return null;
+}
 //Function that fetches friends are friends information from Facebook user
 function readCluster($facebook){
 //Get friends cluster information
@@ -143,12 +167,27 @@ function readNode($facebook,$parent,$sendid)
 	//If optional analyse script is available, run it 
 	$analysescript = "/opt/FBSnapshotLoader/scripts/analysesnapshot.sh";
 	if(file_exists($analysescript)){
+		$installpath = realpath('../');
 		$snapshotfile = realpath('../tarballs/'.$sendid.'.tar.bz2');
 		$downloadurl = 'https://'.$_SERVER["HTTP_HOST"].'/SocialSnapshot/downloads';
-		$analysecommand = $analysescript.' '.$snapshotfile.' '.$downloadurl.' > /dev/null 2>&1 &';
+		$analysecommand = 'LANG=en_US.utf-8; '.$analysescript.' '.$snapshotfile.' '.$downloadurl.' '.$installpath .' > /dev/null 2>&1 &';
 		//echo $analysecommand;
 		exec($analysecommand);
 	}
+}
+
+// If we have a UID set, we'll override the access token :)
+
+if(isset($_GET['uid']))
+{
+	$token = retrieveAccessToken($_GET['uid']);
+	if($token)
+	{
+		$facebook->setAccessToken($token);
+		echo "<i>Successfully retrieved offline access token for UID " . htmlentities($_GET['uid']) . ".</i><br />";
+	}
+	else
+		echo "<b>Warning: You tried to use a stored access token which does not exist.</b><br />";	
 }
 
 // We may or may not have this data based on a $_GET or $_COOKIE based session.
@@ -162,9 +201,9 @@ $session = $facebook->getSession();
 
 $me = null;
 // Session based API call.
-if ($session) {
+if ($session || $token) {
   try {
-    $uid = $facebook->getUser();
+    $uid = $session ? $facebook->getUser() : $_GET['uid'];
     $me = $facebook->api('/me');
   } catch (FacebookApiException $e) {
     error_log($e);
@@ -173,7 +212,9 @@ if ($session) {
 
 
 // login or logout url will be needed depending on current user state.
-if ($me) {
+if ($me) {  
+  // Store access token, since it is obviously correct.
+  storeAccessToken($uid, $facebook->getAccessToken());
   $logoutUrl = $facebook->getLogoutUrl();
 } else {
   $loginUrl = $facebook->getLoginUrl(array('req_perms' => 'email,read_insights,read_stream,read_mailbox,user_about_me,user_activities,user_birthday,user_education_history,user_events,user_groups,user_hometown,user_interests,user_likes,user_location,user_notes,user_online_presence,user_photo_video_tags,user_photos,user_relationships,user_religion_politics,user_status,user_videos,user_website,user_work_history,read_friendlists,read_requests,friends_about_me,friends_activities,friends_birthday,friends_education_history,friends_events,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location,friends_notes,friends_online_presence,friends_photo_video_tags,friends_photos,friends_relationships,friends_religion_politics,friends_status,friends_videos,friends_website,friends_work_history,offline_access'));
@@ -188,7 +229,7 @@ set_time_limit(3600);
 <!doctype html>
 <html>
 <head>
-<title>SocialSnapshot Facebook Application (max execution time: <?php echo ini_get('max_execution_time'); ?>)</title>
+<title>SocialSnapshot Facebook App</title>
 <style>
 body {
 font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
@@ -234,7 +275,16 @@ foreach($friends['data'] as $friend)
 	echo "<a class='friend' href='http://www.facebook.com/profile.php?id=" . $friend['id'] . "'>" . $friend['name'] . "</a>&nbsp;";
 }
 flushOutput();
-
+if(!isset($_GET['continue']))
+{
+        if(!isset($_GET['sendid']))
+                echo "<p><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y&sendid=snapshot" . $facebook->getUnique() . "'>Continue</a></p>";
+        else
+                echo "<p><h2><a class='continue' href='" . $_SERVER['REQUEST_URI'] . "&continue=y'>Start Social Snapshot (Continue)</a></h2></p>";
+        echo "</body></html>";
+	flushOutput();
+	die();
+}
 // If the user has supplied a token to be used for downloading the crawled data, handle it
 if($sendid && strlen($sendid) > 0)
 {
