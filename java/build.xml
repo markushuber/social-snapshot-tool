@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project social-snapshot-tool with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/markus/workspace/social-snapshot-tool/java/socialsnapshot.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="org.sbaresearch.socialsnapshot.SocialSnapshot"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ client.jar common.jar selenium.jar server.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/home/markus/workspace/social-snapshot-tool/java/SocialSnapshot/bin"/>
+            <zipfileset dir="/home/markus/workspace/social-snapshot-tool/java/lib" includes="client.jar"/>
+            <zipfileset dir="/home/markus/workspace/social-snapshot-tool/java/lib" includes="common.jar"/>
+            <zipfileset dir="/home/markus/workspace/social-snapshot-tool/java/lib" includes="selenium.jar"/>
+            <zipfileset dir="/home/markus/workspace/social-snapshot-tool/java/lib" includes="server.jar"/>
+        </jar>
+    </target>
+</project>

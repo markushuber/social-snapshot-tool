@@ -11,19 +11,21 @@
 * Requirement: JRE 1.6
 * Copy java/socialsnapshot.config.example to java/socialsnapshot.config
 * Edit settings in java/socialsnapshot.config to reflect your set-up
+* Within java directory, run "ant" to rebuild client jar
 
 # Usage
 ## Start Selenium Server
-* java -jar java/server-patched.jar 
+* You need a Mozilla Firefox 3.6 with selenium IDE extension 
+* java -jar java/server-patched.jar (selenium server)
 
-## Start Client with HTTP cookie authentication
+## Start client with HTTP cookie authentication ...
 * java -jar socialsnapshot.jar fbid@somehost.com 'c_user=11111 lu=xxx ...'
 
-## Start Client with password authentication
+## ...or start client with password authentication
 * java -jar socialsnapshot.jar fbid@somehost.com "secretpw"
 
 #Results
-## contact details and socialsnapshot Client log
+## Contact details and socialsnapshot client log
 * Local files in /results snapshot11111.csv snapshot11111.log
 ## socialsnapshot data from third-party application
 * User will be automatically notified

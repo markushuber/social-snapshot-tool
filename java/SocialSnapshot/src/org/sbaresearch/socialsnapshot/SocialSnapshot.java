@@ -532,7 +532,6 @@ public class SocialSnapshot {
 	 * @return true if the element appeared; false if it didn't exist after the
 	 *         timeout or an exception occurred.
 	 */
-	@SuppressWarnings("unused")
 	private static boolean waitForElement(Selenium selenium, String selector) {
 		return SocialSnapshot.waitForElement(selenium, selector, 30);
 	}
